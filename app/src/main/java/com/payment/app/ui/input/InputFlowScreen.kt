@@ -221,7 +221,7 @@ private fun SummaryContent(
                 Text("小計:", fontWeight = FontWeight.Bold)
                 Text(formatCurrency(subtotal), fontWeight = FontWeight.Bold)
             }
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         }
 
         Row(
