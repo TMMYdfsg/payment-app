@@ -15,6 +15,7 @@ import androidx.sqlite.db.SupportSQLiteStatement;
 import com.payment.app.data.db.entity.PaymentEntity;
 import java.lang.Class;
 import java.lang.Exception;
+import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -35,11 +36,7 @@ public final class PaymentDao_Impl implements PaymentDao {
 
   private final EntityInsertionAdapter<PaymentEntity> __insertionAdapterOfPaymentEntity;
 
-  private final SharedSQLiteStatement __preparedStmtOfUpdateAmount;
-
-  private final SharedSQLiteStatement __preparedStmtOfDeletePaymentByCardId;
-
-  private final SharedSQLiteStatement __preparedStmtOfResetAllAmounts;
+  private final SharedSQLiteStatement __preparedStmtOfResetMonthAmounts;
 
   public PaymentDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -47,7 +44,7 @@ public final class PaymentDao_Impl implements PaymentDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `payments` (`paymentId`,`cardId`,`amount`,`updatedAt`) VALUES (nullif(?, 0),?,?,?)";
+        return "INSERT OR REPLACE INTO `payments` (`paymentId`,`cardId`,`yearMonth`,`amount`,`isPaid`,`accountId`,`completedAt`,`updatedAt`) VALUES (nullif(?, 0),?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -55,31 +52,35 @@ public final class PaymentDao_Impl implements PaymentDao {
           @NonNull final PaymentEntity entity) {
         statement.bindLong(1, entity.getPaymentId());
         statement.bindLong(2, entity.getCardId());
-        statement.bindLong(3, entity.getAmount());
-        statement.bindLong(4, entity.getUpdatedAt());
+        statement.bindString(3, entity.getYearMonth());
+        statement.bindLong(4, entity.getAmount());
+        final int _tmp = entity.isPaid() ? 1 : 0;
+        statement.bindLong(5, _tmp);
+        if (entity.getAccountId() == null) {
+          statement.bindNull(6);
+        } else {
+          statement.bindLong(6, entity.getAccountId());
+        }
+        if (entity.getCompletedAt() == null) {
+          statement.bindNull(7);
+        } else {
+          statement.bindLong(7, entity.getCompletedAt());
+        }
+        statement.bindLong(8, entity.getUpdatedAt());
       }
     };
-    this.__preparedStmtOfUpdateAmount = new SharedSQLiteStatement(__db) {
+    this.__preparedStmtOfResetMonthAmounts = new SharedSQLiteStatement(__db) {
       @Override
       @NonNull
       public String createQuery() {
-        final String _query = "UPDATE payments SET amount = ?, updatedAt = ? WHERE cardId = ?";
-        return _query;
-      }
-    };
-    this.__preparedStmtOfDeletePaymentByCardId = new SharedSQLiteStatement(__db) {
-      @Override
-      @NonNull
-      public String createQuery() {
-        final String _query = "DELETE FROM payments WHERE cardId = ?";
-        return _query;
-      }
-    };
-    this.__preparedStmtOfResetAllAmounts = new SharedSQLiteStatement(__db) {
-      @Override
-      @NonNull
-      public String createQuery() {
-        final String _query = "UPDATE payments SET amount = 0";
+        final String _query = "\n"
+                + "        UPDATE payments\n"
+                + "        SET amount = 0,\n"
+                + "            isPaid = 0,\n"
+                + "            completedAt = NULL,\n"
+                + "            updatedAt = ?\n"
+                + "        WHERE yearMonth = ?\n"
+                + "        ";
         return _query;
       }
     };
@@ -105,19 +106,17 @@ public final class PaymentDao_Impl implements PaymentDao {
   }
 
   @Override
-  public Object updateAmount(final long cardId, final long amount, final long updatedAt,
+  public Object resetMonthAmounts(final String yearMonth, final long updatedAt,
       final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
       public Unit call() throws Exception {
-        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateAmount.acquire();
+        final SupportSQLiteStatement _stmt = __preparedStmtOfResetMonthAmounts.acquire();
         int _argIndex = 1;
-        _stmt.bindLong(_argIndex, amount);
-        _argIndex = 2;
         _stmt.bindLong(_argIndex, updatedAt);
-        _argIndex = 3;
-        _stmt.bindLong(_argIndex, cardId);
+        _argIndex = 2;
+        _stmt.bindString(_argIndex, yearMonth);
         try {
           __db.beginTransaction();
           try {
@@ -128,65 +127,18 @@ public final class PaymentDao_Impl implements PaymentDao {
             __db.endTransaction();
           }
         } finally {
-          __preparedStmtOfUpdateAmount.release(_stmt);
+          __preparedStmtOfResetMonthAmounts.release(_stmt);
         }
       }
     }, $completion);
   }
 
   @Override
-  public Object deletePaymentByCardId(final long cardId,
-      final Continuation<? super Unit> $completion) {
-    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
-      @Override
-      @NonNull
-      public Unit call() throws Exception {
-        final SupportSQLiteStatement _stmt = __preparedStmtOfDeletePaymentByCardId.acquire();
-        int _argIndex = 1;
-        _stmt.bindLong(_argIndex, cardId);
-        try {
-          __db.beginTransaction();
-          try {
-            _stmt.executeUpdateDelete();
-            __db.setTransactionSuccessful();
-            return Unit.INSTANCE;
-          } finally {
-            __db.endTransaction();
-          }
-        } finally {
-          __preparedStmtOfDeletePaymentByCardId.release(_stmt);
-        }
-      }
-    }, $completion);
-  }
-
-  @Override
-  public Object resetAllAmounts(final Continuation<? super Unit> $completion) {
-    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
-      @Override
-      @NonNull
-      public Unit call() throws Exception {
-        final SupportSQLiteStatement _stmt = __preparedStmtOfResetAllAmounts.acquire();
-        try {
-          __db.beginTransaction();
-          try {
-            _stmt.executeUpdateDelete();
-            __db.setTransactionSuccessful();
-            return Unit.INSTANCE;
-          } finally {
-            __db.endTransaction();
-          }
-        } finally {
-          __preparedStmtOfResetAllAmounts.release(_stmt);
-        }
-      }
-    }, $completion);
-  }
-
-  @Override
-  public Flow<List<PaymentEntity>> getAllPayments() {
-    final String _sql = "SELECT * FROM payments";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+  public Flow<List<PaymentEntity>> getPaymentsByMonth(final String yearMonth) {
+    final String _sql = "SELECT * FROM payments WHERE yearMonth = ?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindString(_argIndex, yearMonth);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"payments"}, new Callable<List<PaymentEntity>>() {
       @Override
       @NonNull
@@ -195,7 +147,11 @@ public final class PaymentDao_Impl implements PaymentDao {
         try {
           final int _cursorIndexOfPaymentId = CursorUtil.getColumnIndexOrThrow(_cursor, "paymentId");
           final int _cursorIndexOfCardId = CursorUtil.getColumnIndexOrThrow(_cursor, "cardId");
+          final int _cursorIndexOfYearMonth = CursorUtil.getColumnIndexOrThrow(_cursor, "yearMonth");
           final int _cursorIndexOfAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "amount");
+          final int _cursorIndexOfIsPaid = CursorUtil.getColumnIndexOrThrow(_cursor, "isPaid");
+          final int _cursorIndexOfAccountId = CursorUtil.getColumnIndexOrThrow(_cursor, "accountId");
+          final int _cursorIndexOfCompletedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "completedAt");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updatedAt");
           final List<PaymentEntity> _result = new ArrayList<PaymentEntity>(_cursor.getCount());
           while (_cursor.moveToNext()) {
@@ -204,11 +160,29 @@ public final class PaymentDao_Impl implements PaymentDao {
             _tmpPaymentId = _cursor.getLong(_cursorIndexOfPaymentId);
             final long _tmpCardId;
             _tmpCardId = _cursor.getLong(_cursorIndexOfCardId);
+            final String _tmpYearMonth;
+            _tmpYearMonth = _cursor.getString(_cursorIndexOfYearMonth);
             final long _tmpAmount;
             _tmpAmount = _cursor.getLong(_cursorIndexOfAmount);
+            final boolean _tmpIsPaid;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsPaid);
+            _tmpIsPaid = _tmp != 0;
+            final Long _tmpAccountId;
+            if (_cursor.isNull(_cursorIndexOfAccountId)) {
+              _tmpAccountId = null;
+            } else {
+              _tmpAccountId = _cursor.getLong(_cursorIndexOfAccountId);
+            }
+            final Long _tmpCompletedAt;
+            if (_cursor.isNull(_cursorIndexOfCompletedAt)) {
+              _tmpCompletedAt = null;
+            } else {
+              _tmpCompletedAt = _cursor.getLong(_cursorIndexOfCompletedAt);
+            }
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new PaymentEntity(_tmpPaymentId,_tmpCardId,_tmpAmount,_tmpUpdatedAt);
+            _item = new PaymentEntity(_tmpPaymentId,_tmpCardId,_tmpYearMonth,_tmpAmount,_tmpIsPaid,_tmpAccountId,_tmpCompletedAt,_tmpUpdatedAt);
             _result.add(_item);
           }
           return _result;
@@ -225,36 +199,58 @@ public final class PaymentDao_Impl implements PaymentDao {
   }
 
   @Override
-  public Object getPaymentByCardId(final long cardId,
-      final Continuation<? super PaymentEntity> $completion) {
-    final String _sql = "SELECT * FROM payments WHERE cardId = ? LIMIT 1";
+  public Object getPaymentsByMonthOnce(final String yearMonth,
+      final Continuation<? super List<PaymentEntity>> $completion) {
+    final String _sql = "SELECT * FROM payments WHERE yearMonth = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
-    _statement.bindLong(_argIndex, cardId);
+    _statement.bindString(_argIndex, yearMonth);
     final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
-    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<PaymentEntity>() {
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<PaymentEntity>>() {
       @Override
-      @Nullable
-      public PaymentEntity call() throws Exception {
+      @NonNull
+      public List<PaymentEntity> call() throws Exception {
         final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
         try {
           final int _cursorIndexOfPaymentId = CursorUtil.getColumnIndexOrThrow(_cursor, "paymentId");
           final int _cursorIndexOfCardId = CursorUtil.getColumnIndexOrThrow(_cursor, "cardId");
+          final int _cursorIndexOfYearMonth = CursorUtil.getColumnIndexOrThrow(_cursor, "yearMonth");
           final int _cursorIndexOfAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "amount");
+          final int _cursorIndexOfIsPaid = CursorUtil.getColumnIndexOrThrow(_cursor, "isPaid");
+          final int _cursorIndexOfAccountId = CursorUtil.getColumnIndexOrThrow(_cursor, "accountId");
+          final int _cursorIndexOfCompletedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "completedAt");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updatedAt");
-          final PaymentEntity _result;
-          if (_cursor.moveToFirst()) {
+          final List<PaymentEntity> _result = new ArrayList<PaymentEntity>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final PaymentEntity _item;
             final long _tmpPaymentId;
             _tmpPaymentId = _cursor.getLong(_cursorIndexOfPaymentId);
             final long _tmpCardId;
             _tmpCardId = _cursor.getLong(_cursorIndexOfCardId);
+            final String _tmpYearMonth;
+            _tmpYearMonth = _cursor.getString(_cursorIndexOfYearMonth);
             final long _tmpAmount;
             _tmpAmount = _cursor.getLong(_cursorIndexOfAmount);
+            final boolean _tmpIsPaid;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsPaid);
+            _tmpIsPaid = _tmp != 0;
+            final Long _tmpAccountId;
+            if (_cursor.isNull(_cursorIndexOfAccountId)) {
+              _tmpAccountId = null;
+            } else {
+              _tmpAccountId = _cursor.getLong(_cursorIndexOfAccountId);
+            }
+            final Long _tmpCompletedAt;
+            if (_cursor.isNull(_cursorIndexOfCompletedAt)) {
+              _tmpCompletedAt = null;
+            } else {
+              _tmpCompletedAt = _cursor.getLong(_cursorIndexOfCompletedAt);
+            }
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _result = new PaymentEntity(_tmpPaymentId,_tmpCardId,_tmpAmount,_tmpUpdatedAt);
-          } else {
-            _result = null;
+            _item = new PaymentEntity(_tmpPaymentId,_tmpCardId,_tmpYearMonth,_tmpAmount,_tmpIsPaid,_tmpAccountId,_tmpCompletedAt,_tmpUpdatedAt);
+            _result.add(_item);
           }
           return _result;
         } finally {
@@ -266,12 +262,16 @@ public final class PaymentDao_Impl implements PaymentDao {
   }
 
   @Override
-  public Flow<PaymentEntity> getPaymentByCardIdFlow(final long cardId) {
-    final String _sql = "SELECT * FROM payments WHERE cardId = ? LIMIT 1";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+  public Object getPaymentByCardIdAndMonth(final long cardId, final String yearMonth,
+      final Continuation<? super PaymentEntity> $completion) {
+    final String _sql = "SELECT * FROM payments WHERE cardId = ? AND yearMonth = ? LIMIT 1";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
     int _argIndex = 1;
     _statement.bindLong(_argIndex, cardId);
-    return CoroutinesRoom.createFlow(__db, false, new String[] {"payments"}, new Callable<PaymentEntity>() {
+    _argIndex = 2;
+    _statement.bindString(_argIndex, yearMonth);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<PaymentEntity>() {
       @Override
       @Nullable
       public PaymentEntity call() throws Exception {
@@ -279,7 +279,11 @@ public final class PaymentDao_Impl implements PaymentDao {
         try {
           final int _cursorIndexOfPaymentId = CursorUtil.getColumnIndexOrThrow(_cursor, "paymentId");
           final int _cursorIndexOfCardId = CursorUtil.getColumnIndexOrThrow(_cursor, "cardId");
+          final int _cursorIndexOfYearMonth = CursorUtil.getColumnIndexOrThrow(_cursor, "yearMonth");
           final int _cursorIndexOfAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "amount");
+          final int _cursorIndexOfIsPaid = CursorUtil.getColumnIndexOrThrow(_cursor, "isPaid");
+          final int _cursorIndexOfAccountId = CursorUtil.getColumnIndexOrThrow(_cursor, "accountId");
+          final int _cursorIndexOfCompletedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "completedAt");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updatedAt");
           final PaymentEntity _result;
           if (_cursor.moveToFirst()) {
@@ -287,25 +291,39 @@ public final class PaymentDao_Impl implements PaymentDao {
             _tmpPaymentId = _cursor.getLong(_cursorIndexOfPaymentId);
             final long _tmpCardId;
             _tmpCardId = _cursor.getLong(_cursorIndexOfCardId);
+            final String _tmpYearMonth;
+            _tmpYearMonth = _cursor.getString(_cursorIndexOfYearMonth);
             final long _tmpAmount;
             _tmpAmount = _cursor.getLong(_cursorIndexOfAmount);
+            final boolean _tmpIsPaid;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsPaid);
+            _tmpIsPaid = _tmp != 0;
+            final Long _tmpAccountId;
+            if (_cursor.isNull(_cursorIndexOfAccountId)) {
+              _tmpAccountId = null;
+            } else {
+              _tmpAccountId = _cursor.getLong(_cursorIndexOfAccountId);
+            }
+            final Long _tmpCompletedAt;
+            if (_cursor.isNull(_cursorIndexOfCompletedAt)) {
+              _tmpCompletedAt = null;
+            } else {
+              _tmpCompletedAt = _cursor.getLong(_cursorIndexOfCompletedAt);
+            }
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _result = new PaymentEntity(_tmpPaymentId,_tmpCardId,_tmpAmount,_tmpUpdatedAt);
+            _result = new PaymentEntity(_tmpPaymentId,_tmpCardId,_tmpYearMonth,_tmpAmount,_tmpIsPaid,_tmpAccountId,_tmpCompletedAt,_tmpUpdatedAt);
           } else {
             _result = null;
           }
           return _result;
         } finally {
           _cursor.close();
+          _statement.release();
         }
       }
-
-      @Override
-      protected void finalize() {
-        _statement.release();
-      }
-    });
+    }, $completion);
   }
 
   @NonNull

@@ -61,6 +61,7 @@ fun ListScreen(
     val uiState by viewModel.uiState.collectAsState()
     var editingCard by remember { mutableStateOf<CardWithPayment?>(null) }
     var editAmount by remember { mutableStateOf("") }
+    var query by remember { mutableStateOf("") }
 
     LaunchedEffect(yearMonth) {
         viewModel.setYearMonth(yearMonth)
@@ -140,6 +141,16 @@ fun ListScreen(
                 }
 
                 item {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        label = { Text("フィルター（カード名/カテゴリ）") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+
+                item {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         SummaryMetricCard(
                             title = "総額",
@@ -155,9 +166,15 @@ fun ListScreen(
                 }
 
                 uiState.cardsByDueDate.entries.sortedBy { it.key }.forEach { (dueDate, cards) ->
+                    val filtered = cards.filter {
+                        query.isBlank() ||
+                            it.cardName.contains(query, ignoreCase = true) ||
+                            it.category.contains(query, ignoreCase = true)
+                    }
+                    if (filtered.isEmpty()) return@forEach
                     item {
                         val color = getDueDateColor(dueDate)
-                        val subtotal = uiState.subtotalByDueDate[dueDate] ?: 0L
+                        val subtotal = filtered.sumOf { it.amount }
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.08f))
@@ -183,7 +200,7 @@ fun ListScreen(
                                     )
                                 }
                                 HorizontalDivider()
-                                cards.forEach { card ->
+                                filtered.forEach { card ->
                                     val billingInfo = calculateBillingDate(parseYearMonth(uiState.selectedYearMonth), card.dueDate)
                                     Column(
                                         modifier = Modifier
@@ -206,6 +223,13 @@ fun ListScreen(
                                                     style = MaterialTheme.typography.bodyLarge,
                                                     fontWeight = FontWeight.Bold
                                                 )
+                                                if (card.category.isNotBlank()) {
+                                                    Text(
+                                                        card.category,
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    )
+                                                }
                                                 Text(
                                                     "予定日: ${billingInfo.scheduledDate.asDisplayLabel()}",
                                                     style = MaterialTheme.typography.bodySmall,

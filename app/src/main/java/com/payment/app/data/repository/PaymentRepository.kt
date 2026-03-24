@@ -1,9 +1,11 @@
 package com.payment.app.data.repository
 
 import com.payment.app.data.db.AccountDao
+import com.payment.app.data.db.BudgetDao
 import com.payment.app.data.db.CardDao
 import com.payment.app.data.db.PaymentDao
 import com.payment.app.data.db.entity.BankAccountEntity
+import com.payment.app.data.db.entity.BudgetEntity
 import com.payment.app.data.db.entity.CardEntity
 import com.payment.app.data.db.entity.PaymentEntity
 import com.payment.app.data.model.CardWithPayment
@@ -16,7 +18,8 @@ import javax.inject.Singleton
 class PaymentRepository @Inject constructor(
     private val cardDao: CardDao,
     private val paymentDao: PaymentDao,
-    private val accountDao: AccountDao
+    private val accountDao: AccountDao,
+    private val budgetDao: BudgetDao
 ) {
     val allCards: Flow<List<CardEntity>> = cardDao.getAllCards()
     val allAccounts: Flow<List<BankAccountEntity>> = accountDao.getAllAccounts()
@@ -33,8 +36,14 @@ class PaymentRepository @Inject constructor(
         mergeCardsWithPayments(cards, payments, accounts, yearMonth)
     }
 
-    suspend fun addCard(cardName: String, dueDate: Int): Long =
-        cardDao.insertCard(CardEntity(cardName = cardName, dueDate = dueDate))
+    fun observeBudget(yearMonth: String, category: String?): Flow<BudgetEntity?> =
+        budgetDao.getBudget(yearMonth, category?.takeUnless { it.isBlank() })
+
+    fun observeBudgets(yearMonth: String): Flow<List<BudgetEntity>> =
+        budgetDao.getBudgetsByMonth(yearMonth)
+
+    suspend fun addCard(cardName: String, dueDate: Int, category: String): Long =
+        cardDao.insertCard(CardEntity(cardName = cardName, dueDate = dueDate, category = category))
 
     suspend fun deleteCard(card: CardEntity) {
         cardDao.deleteCard(card)
@@ -101,6 +110,10 @@ class PaymentRepository @Inject constructor(
         paymentDao.resetMonthAmounts(yearMonth)
     }
 
+    suspend fun markAllPaid(yearMonth: String) {
+        paymentDao.markAllPaid(yearMonth)
+    }
+
     suspend fun initializeDefaultCards() {
         if (cardDao.getCardCount() == 0) {
             val defaults = listOf(
@@ -132,6 +145,16 @@ class PaymentRepository @Inject constructor(
         return mergeCardsWithPayments(cards, payments, accounts, yearMonth)
     }
 
+    suspend fun upsertBudget(yearMonth: String, category: String?, amount: Long) {
+        budgetDao.upsertBudget(
+            BudgetEntity(
+                yearMonth = yearMonth,
+                category = category?.takeUnless { it.isBlank() },
+                amount = amount
+            )
+        )
+    }
+
     private suspend fun upsertMonthlyPayment(
         cardId: Long,
         yearMonth: String,
@@ -158,6 +181,7 @@ class PaymentRepository @Inject constructor(
                     cardId = card.cardId,
                     cardName = card.cardName,
                     dueDate = card.dueDate,
+                    category = card.category,
                     yearMonth = yearMonth,
                     amount = payment?.amount ?: 0L,
                     isPaid = payment?.isPaid ?: false,

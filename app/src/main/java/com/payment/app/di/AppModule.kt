@@ -7,6 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.payment.app.data.db.AccountDao
 import com.payment.app.data.db.AppDatabase
 import com.payment.app.data.db.CardDao
+import com.payment.app.data.db.BudgetDao
 import com.payment.app.data.db.PaymentDao
 import dagger.Module
 import dagger.Provides
@@ -69,12 +70,32 @@ object AppModule {
             )
         }
     }
+    private val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                ALTER TABLE cards ADD COLUMN category TEXT NOT NULL DEFAULT ''
+                """.trimIndent()
+            )
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS budgets (
+                    budgetId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    yearMonth TEXT NOT NULL,
+                    category TEXT,
+                    amount INTEGER NOT NULL,
+                    UNIQUE(yearMonth, category)
+                )
+                """.trimIndent()
+            )
+        }
+    }
 
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "payment_db")
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     @Provides
@@ -88,4 +109,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAccountDao(db: AppDatabase): AccountDao = db.accountDao()
+
+    @Provides
+    @Singleton
+    fun provideBudgetDao(db: AppDatabase): BudgetDao = db.budgetDao()
 }

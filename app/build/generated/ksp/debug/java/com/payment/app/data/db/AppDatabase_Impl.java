@@ -31,23 +31,30 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile PaymentDao _paymentDao;
 
+  private volatile AccountDao _accountDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `cards` (`cardId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `cardName` TEXT NOT NULL, `dueDate` INTEGER NOT NULL)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `payments` (`paymentId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `cardId` INTEGER NOT NULL, `amount` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, FOREIGN KEY(`cardId`) REFERENCES `cards`(`cardId`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `payments` (`paymentId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `cardId` INTEGER NOT NULL, `yearMonth` TEXT NOT NULL, `amount` INTEGER NOT NULL, `isPaid` INTEGER NOT NULL, `accountId` INTEGER, `completedAt` INTEGER, `updatedAt` INTEGER NOT NULL, FOREIGN KEY(`cardId`) REFERENCES `cards`(`cardId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`accountId`) REFERENCES `bank_accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE SET NULL )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_payments_cardId` ON `payments` (`cardId`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_payments_yearMonth` ON `payments` (`yearMonth`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_payments_accountId` ON `payments` (`accountId`)");
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_payments_cardId_yearMonth` ON `payments` (`cardId`, `yearMonth`)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `bank_accounts` (`accountId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountName` TEXT NOT NULL, `bankName` TEXT NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b015948bd2f5eaec2ea1673fce679e99')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b6d158ad32044a1120c35fdf12044ff1')");
       }
 
       @Override
       public void dropAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS `cards`");
         db.execSQL("DROP TABLE IF EXISTS `payments`");
+        db.execSQL("DROP TABLE IF EXISTS `bank_accounts`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -105,15 +112,23 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoCards + "\n"
                   + " Found:\n" + _existingCards);
         }
-        final HashMap<String, TableInfo.Column> _columnsPayments = new HashMap<String, TableInfo.Column>(4);
+        final HashMap<String, TableInfo.Column> _columnsPayments = new HashMap<String, TableInfo.Column>(8);
         _columnsPayments.put("paymentId", new TableInfo.Column("paymentId", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPayments.put("cardId", new TableInfo.Column("cardId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPayments.put("yearMonth", new TableInfo.Column("yearMonth", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPayments.put("amount", new TableInfo.Column("amount", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPayments.put("isPaid", new TableInfo.Column("isPaid", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPayments.put("accountId", new TableInfo.Column("accountId", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPayments.put("completedAt", new TableInfo.Column("completedAt", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPayments.put("updatedAt", new TableInfo.Column("updatedAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        final HashSet<TableInfo.ForeignKey> _foreignKeysPayments = new HashSet<TableInfo.ForeignKey>(1);
+        final HashSet<TableInfo.ForeignKey> _foreignKeysPayments = new HashSet<TableInfo.ForeignKey>(2);
         _foreignKeysPayments.add(new TableInfo.ForeignKey("cards", "CASCADE", "NO ACTION", Arrays.asList("cardId"), Arrays.asList("cardId")));
-        final HashSet<TableInfo.Index> _indicesPayments = new HashSet<TableInfo.Index>(1);
+        _foreignKeysPayments.add(new TableInfo.ForeignKey("bank_accounts", "SET NULL", "NO ACTION", Arrays.asList("accountId"), Arrays.asList("accountId")));
+        final HashSet<TableInfo.Index> _indicesPayments = new HashSet<TableInfo.Index>(4);
         _indicesPayments.add(new TableInfo.Index("index_payments_cardId", false, Arrays.asList("cardId"), Arrays.asList("ASC")));
+        _indicesPayments.add(new TableInfo.Index("index_payments_yearMonth", false, Arrays.asList("yearMonth"), Arrays.asList("ASC")));
+        _indicesPayments.add(new TableInfo.Index("index_payments_accountId", false, Arrays.asList("accountId"), Arrays.asList("ASC")));
+        _indicesPayments.add(new TableInfo.Index("index_payments_cardId_yearMonth", true, Arrays.asList("cardId", "yearMonth"), Arrays.asList("ASC", "ASC")));
         final TableInfo _infoPayments = new TableInfo("payments", _columnsPayments, _foreignKeysPayments, _indicesPayments);
         final TableInfo _existingPayments = TableInfo.read(db, "payments");
         if (!_infoPayments.equals(_existingPayments)) {
@@ -121,9 +136,22 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoPayments + "\n"
                   + " Found:\n" + _existingPayments);
         }
+        final HashMap<String, TableInfo.Column> _columnsBankAccounts = new HashMap<String, TableInfo.Column>(3);
+        _columnsBankAccounts.put("accountId", new TableInfo.Column("accountId", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsBankAccounts.put("accountName", new TableInfo.Column("accountName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsBankAccounts.put("bankName", new TableInfo.Column("bankName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysBankAccounts = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesBankAccounts = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoBankAccounts = new TableInfo("bank_accounts", _columnsBankAccounts, _foreignKeysBankAccounts, _indicesBankAccounts);
+        final TableInfo _existingBankAccounts = TableInfo.read(db, "bank_accounts");
+        if (!_infoBankAccounts.equals(_existingBankAccounts)) {
+          return new RoomOpenHelper.ValidationResult(false, "bank_accounts(com.payment.app.data.db.entity.BankAccountEntity).\n"
+                  + " Expected:\n" + _infoBankAccounts + "\n"
+                  + " Found:\n" + _existingBankAccounts);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "b015948bd2f5eaec2ea1673fce679e99", "ea1f444c1f05e6928e338f3dd870f3d9");
+    }, "b6d158ad32044a1120c35fdf12044ff1", "c094947f475f2fd534a0186dd313abd1");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -134,7 +162,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "cards","payments");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "cards","payments","bank_accounts");
   }
 
   @Override
@@ -152,6 +180,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       }
       _db.execSQL("DELETE FROM `cards`");
       _db.execSQL("DELETE FROM `payments`");
+      _db.execSQL("DELETE FROM `bank_accounts`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -171,6 +200,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     final HashMap<Class<?>, List<Class<?>>> _typeConvertersMap = new HashMap<Class<?>, List<Class<?>>>();
     _typeConvertersMap.put(CardDao.class, CardDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(PaymentDao.class, PaymentDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(AccountDao.class, AccountDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -213,6 +243,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _paymentDao = new PaymentDao_Impl(this);
         }
         return _paymentDao;
+      }
+    }
+  }
+
+  @Override
+  public AccountDao accountDao() {
+    if (_accountDao != null) {
+      return _accountDao;
+    } else {
+      synchronized(this) {
+        if(_accountDao == null) {
+          _accountDao = new AccountDao_Impl(this);
+        }
+        return _accountDao;
       }
     }
   }

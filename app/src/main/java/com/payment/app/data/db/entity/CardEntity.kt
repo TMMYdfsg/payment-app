@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class CardEntity(
     @PrimaryKey(autoGenerate = true) val cardId: Long = 0,
     val cardName: String,
-    val dueDate: Int
+    val dueDate: Int,
+    val category: String = ""
 )

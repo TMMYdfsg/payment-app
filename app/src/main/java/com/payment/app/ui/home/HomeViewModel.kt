@@ -2,6 +2,7 @@ package com.payment.app.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.payment.app.data.db.entity.BudgetEntity
 import com.payment.app.data.model.CardWithPayment
 import com.payment.app.data.repository.PaymentRepository
 import com.payment.app.util.asDisplayLabel
@@ -9,11 +10,11 @@ import com.payment.app.util.asStorageKey
 import com.payment.app.util.calculateBillingDate
 import com.payment.app.util.currentYearMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,6 +36,8 @@ data class HomeUiState(
     val cardsByDueDate: Map<Int, List<CardWithPayment>> = emptyMap(),
     val subtotalByDueDate: Map<Int, Long> = emptyMap(),
     val totalAmount: Long = 0L,
+    val budgetAmount: Long? = null,
+    val budgetRemaining: Long? = null,
     val paidAmount: Long = 0L,
     val unpaidAmount: Long = 0L,
     val paidCount: Int = 0,
@@ -54,8 +57,11 @@ class HomeViewModel @Inject constructor(
 
     val uiState: StateFlow<HomeUiState> = selectedMonth
         .flatMapLatest { yearMonth ->
-            repository.observeCardPayments(yearMonth.asStorageKey()).map { cards ->
-                buildUiState(yearMonth, cards)
+            combine(
+                repository.observeCardPayments(yearMonth.asStorageKey()),
+                repository.observeBudget(yearMonth.asStorageKey(), null)
+            ) { cards, budget ->
+                buildUiState(yearMonth, cards, budget)
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HomeUiState())
@@ -70,6 +76,21 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun markAllPaid() {
+        viewModelScope.launch {
+            repository.markAllPaid(selectedMonth.value.asStorageKey())
+        }
+    }
+
+    fun updateBudget(amount: Long) {
+        viewModelScope.launch {
+            repository.upsertBudget(selectedMonth.value.asStorageKey(), null, amount)
+        }
+    }
+
+    suspend fun getCurrentPayments(): List<CardWithPayment> =
+        repository.getCardPaymentsOnce(selectedMonth.value.asStorageKey())
+
     init {
         viewModelScope.launch {
             repository.initializeDefaultAccounts()
@@ -77,7 +98,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun buildUiState(yearMonth: YearMonth, cards: List<CardWithPayment>): HomeUiState {
+    private fun buildUiState(yearMonth: YearMonth, cards: List<CardWithPayment>, budget: BudgetEntity?): HomeUiState {
         val grouped = cards.groupBy { it.dueDate }
         val subtotals = grouped.mapValues { (_, list) -> list.sumOf { it.amount } }
         val paidAmount = cards.filter { it.isPaid }.sumOf { it.amount }
@@ -107,6 +128,8 @@ class HomeViewModel @Inject constructor(
             .toList()
             .sortedByDescending { it.second }
             .toMap()
+        val budgetAmount = budget?.amount
+        val budgetRemaining = budgetAmount?.let { it - subtotals.values.sum() }
 
         return HomeUiState(
             selectedYearMonth = yearMonth.asStorageKey(),
@@ -114,6 +137,8 @@ class HomeViewModel @Inject constructor(
             cardsByDueDate = grouped,
             subtotalByDueDate = subtotals,
             totalAmount = subtotals.values.sum(),
+            budgetAmount = budgetAmount,
+            budgetRemaining = budgetRemaining,
             paidAmount = paidAmount,
             unpaidAmount = subtotals.values.sum() - paidAmount,
             paidCount = cards.count { it.isPaid },

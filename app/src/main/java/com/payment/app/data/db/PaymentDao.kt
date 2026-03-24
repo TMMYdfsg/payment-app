@@ -29,4 +29,15 @@ interface PaymentDao {
         """
     )
     suspend fun resetMonthAmounts(yearMonth: String, updatedAt: Long = System.currentTimeMillis())
+
+    @Query(
+        """
+        UPDATE payments
+        SET isPaid = 1,
+            completedAt = :completedAt,
+            updatedAt = :completedAt
+        WHERE yearMonth = :yearMonth
+        """
+    )
+    suspend fun markAllPaid(yearMonth: String, completedAt: Long = System.currentTimeMillis())
 }

@@ -1,6 +1,7 @@
 package com.payment.app;
 
 import com.payment.app.di.AppModule;
+import com.payment.app.ui.account.AccountManageViewModel_HiltModules;
 import com.payment.app.ui.card.CardManageViewModel_HiltModules;
 import com.payment.app.ui.home.HomeViewModel_HiltModules;
 import com.payment.app.ui.input.InputFlowViewModel_HiltModules;
@@ -156,6 +157,7 @@ public final class PaymentApp_HiltComponents {
 
   @Subcomponent(
       modules = {
+          AccountManageViewModel_HiltModules.KeyModule.class,
           CardManageViewModel_HiltModules.KeyModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HiltWrapper_SavedStateHandleModule.class,
@@ -199,6 +201,7 @@ public final class PaymentApp_HiltComponents {
 
   @Subcomponent(
       modules = {
+          AccountManageViewModel_HiltModules.BindsModule.class,
           CardManageViewModel_HiltModules.BindsModule.class,
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
           HomeViewModel_HiltModules.BindsModule.class,

@@ -4,6 +4,7 @@ data class CardWithPayment(
     val cardId: Long,
     val cardName: String,
     val dueDate: Int,
+    val category: String = "",
     val yearMonth: String,
     val amount: Long = 0,
     val isPaid: Boolean = false,

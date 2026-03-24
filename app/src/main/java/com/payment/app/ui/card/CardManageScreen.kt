@@ -30,8 +30,8 @@ fun CardManageScreen(
 
     if (showAddDialog) {
         AddCardDialog(
-            onConfirm = { name, dueDate ->
-                viewModel.addCard(name, dueDate)
+            onConfirm = { name, dueDate, category ->
+                viewModel.addCard(name, dueDate, category)
                 showAddDialog = false
             },
             onDismiss = { showAddDialog = false }
@@ -111,7 +111,16 @@ fun CardManageScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(card.cardName, style = MaterialTheme.typography.bodyLarge)
+                                Column {
+                                    Text(card.cardName, style = MaterialTheme.typography.bodyLarge)
+                                    if (card.category.isNotBlank()) {
+                                        Text(
+                                            "カテゴリ: ${card.category}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
                                 IconButton(onClick = { deleteConfirmCard = card }) {
                                     Icon(
                                         Icons.Default.Delete,
@@ -130,11 +139,12 @@ fun CardManageScreen(
 
 @Composable
 private fun AddCardDialog(
-    onConfirm: (String, Int) -> Unit,
+    onConfirm: (String, Int, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     var cardName by remember { mutableStateOf("") }
     var dueDateText by remember { mutableStateOf("") }
+    var category by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -156,13 +166,20 @@ private fun AddCardDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+                OutlinedTextField(
+                    value = category,
+                    onValueChange = { category = it },
+                    label = { Text("カテゴリ（任意）") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
                     val dueDate = dueDateText.toIntOrNull() ?: 0
-                    onConfirm(cardName, dueDate)
+                    onConfirm(cardName, dueDate, category)
                 },
                 enabled = cardName.isNotBlank() && dueDateText.isNotBlank()
             ) { Text("追加") }

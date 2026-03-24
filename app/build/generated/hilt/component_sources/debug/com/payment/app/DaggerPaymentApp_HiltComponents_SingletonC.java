@@ -6,13 +6,17 @@ import android.view.View;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
+import com.payment.app.data.db.AccountDao;
 import com.payment.app.data.db.AppDatabase;
 import com.payment.app.data.db.CardDao;
 import com.payment.app.data.db.PaymentDao;
 import com.payment.app.data.repository.PaymentRepository;
+import com.payment.app.di.AppModule_ProvideAccountDaoFactory;
 import com.payment.app.di.AppModule_ProvideCardDaoFactory;
 import com.payment.app.di.AppModule_ProvideDatabaseFactory;
 import com.payment.app.di.AppModule_ProvidePaymentDaoFactory;
+import com.payment.app.ui.account.AccountManageViewModel;
+import com.payment.app.ui.account.AccountManageViewModel_HiltModules;
 import com.payment.app.ui.card.CardManageViewModel;
 import com.payment.app.ui.card.CardManageViewModel_HiltModules;
 import com.payment.app.ui.home.HomeViewModel;
@@ -382,7 +386,7 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     @Override
     public Map<Class<?>, Boolean> getViewModelKeys() {
-      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(4).put(LazyClassKeyProvider.com_payment_app_ui_card_CardManageViewModel, CardManageViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_payment_app_ui_home_HomeViewModel, HomeViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_payment_app_ui_input_InputFlowViewModel, InputFlowViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_payment_app_ui_list_ListViewModel, ListViewModel_HiltModules.KeyModule.provide()).build());
+      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(5).put(LazyClassKeyProvider.com_payment_app_ui_account_AccountManageViewModel, AccountManageViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_payment_app_ui_card_CardManageViewModel, CardManageViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_payment_app_ui_home_HomeViewModel, HomeViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_payment_app_ui_input_InputFlowViewModel, InputFlowViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_payment_app_ui_list_ListViewModel, ListViewModel_HiltModules.KeyModule.provide()).build());
     }
 
     @Override
@@ -402,25 +406,30 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
-
-      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
+      static String com_payment_app_ui_account_AccountManageViewModel = "com.payment.app.ui.account.AccountManageViewModel";
 
       static String com_payment_app_ui_home_HomeViewModel = "com.payment.app.ui.home.HomeViewModel";
 
       static String com_payment_app_ui_card_CardManageViewModel = "com.payment.app.ui.card.CardManageViewModel";
 
-      @KeepFieldType
-      InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
+      static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
+
+      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
 
       @KeepFieldType
-      ListViewModel com_payment_app_ui_list_ListViewModel2;
+      AccountManageViewModel com_payment_app_ui_account_AccountManageViewModel2;
 
       @KeepFieldType
       HomeViewModel com_payment_app_ui_home_HomeViewModel2;
 
       @KeepFieldType
       CardManageViewModel com_payment_app_ui_card_CardManageViewModel2;
+
+      @KeepFieldType
+      InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
+
+      @KeepFieldType
+      ListViewModel com_payment_app_ui_list_ListViewModel2;
     }
   }
 
@@ -430,6 +439,8 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
     private final ActivityRetainedCImpl activityRetainedCImpl;
 
     private final ViewModelCImpl viewModelCImpl = this;
+
+    private Provider<AccountManageViewModel> accountManageViewModelProvider;
 
     private Provider<CardManageViewModel> cardManageViewModelProvider;
 
@@ -452,15 +463,16 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
     @SuppressWarnings("unchecked")
     private void initialize(final SavedStateHandle savedStateHandleParam,
         final ViewModelLifecycle viewModelLifecycleParam) {
-      this.cardManageViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
-      this.homeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
-      this.inputFlowViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
-      this.listViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
+      this.accountManageViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
+      this.cardManageViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
+      this.homeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
+      this.inputFlowViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
+      this.listViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
     }
 
     @Override
     public Map<Class<?>, javax.inject.Provider<ViewModel>> getHiltViewModelMap() {
-      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(4).put(LazyClassKeyProvider.com_payment_app_ui_card_CardManageViewModel, ((Provider) cardManageViewModelProvider)).put(LazyClassKeyProvider.com_payment_app_ui_home_HomeViewModel, ((Provider) homeViewModelProvider)).put(LazyClassKeyProvider.com_payment_app_ui_input_InputFlowViewModel, ((Provider) inputFlowViewModelProvider)).put(LazyClassKeyProvider.com_payment_app_ui_list_ListViewModel, ((Provider) listViewModelProvider)).build());
+      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(5).put(LazyClassKeyProvider.com_payment_app_ui_account_AccountManageViewModel, ((Provider) accountManageViewModelProvider)).put(LazyClassKeyProvider.com_payment_app_ui_card_CardManageViewModel, ((Provider) cardManageViewModelProvider)).put(LazyClassKeyProvider.com_payment_app_ui_home_HomeViewModel, ((Provider) homeViewModelProvider)).put(LazyClassKeyProvider.com_payment_app_ui_input_InputFlowViewModel, ((Provider) inputFlowViewModelProvider)).put(LazyClassKeyProvider.com_payment_app_ui_list_ListViewModel, ((Provider) listViewModelProvider)).build());
     }
 
     @Override
@@ -470,25 +482,30 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
-
-      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
+      static String com_payment_app_ui_account_AccountManageViewModel = "com.payment.app.ui.account.AccountManageViewModel";
 
       static String com_payment_app_ui_home_HomeViewModel = "com.payment.app.ui.home.HomeViewModel";
 
+      static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
+
       static String com_payment_app_ui_card_CardManageViewModel = "com.payment.app.ui.card.CardManageViewModel";
 
-      @KeepFieldType
-      InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
+      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
 
       @KeepFieldType
-      ListViewModel com_payment_app_ui_list_ListViewModel2;
+      AccountManageViewModel com_payment_app_ui_account_AccountManageViewModel2;
 
       @KeepFieldType
       HomeViewModel com_payment_app_ui_home_HomeViewModel2;
 
       @KeepFieldType
+      InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
+
+      @KeepFieldType
       CardManageViewModel com_payment_app_ui_card_CardManageViewModel2;
+
+      @KeepFieldType
+      ListViewModel com_payment_app_ui_list_ListViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -512,16 +529,19 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       @Override
       public T get() {
         switch (id) {
-          case 0: // com.payment.app.ui.card.CardManageViewModel 
+          case 0: // com.payment.app.ui.account.AccountManageViewModel 
+          return (T) new AccountManageViewModel(singletonCImpl.paymentRepositoryProvider.get());
+
+          case 1: // com.payment.app.ui.card.CardManageViewModel 
           return (T) new CardManageViewModel(singletonCImpl.paymentRepositoryProvider.get());
 
-          case 1: // com.payment.app.ui.home.HomeViewModel 
+          case 2: // com.payment.app.ui.home.HomeViewModel 
           return (T) new HomeViewModel(singletonCImpl.paymentRepositoryProvider.get());
 
-          case 2: // com.payment.app.ui.input.InputFlowViewModel 
+          case 3: // com.payment.app.ui.input.InputFlowViewModel 
           return (T) new InputFlowViewModel(singletonCImpl.paymentRepositoryProvider.get());
 
-          case 3: // com.payment.app.ui.list.ListViewModel 
+          case 4: // com.payment.app.ui.list.ListViewModel 
           return (T) new ListViewModel(singletonCImpl.paymentRepositoryProvider.get());
 
           default: throw new AssertionError(id);
@@ -610,6 +630,8 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     private Provider<PaymentDao> providePaymentDaoProvider;
 
+    private Provider<AccountDao> provideAccountDaoProvider;
+
     private Provider<PaymentRepository> paymentRepositoryProvider;
 
     private SingletonCImpl(ApplicationContextModule applicationContextModuleParam) {
@@ -623,6 +645,7 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       this.provideDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<AppDatabase>(singletonCImpl, 2));
       this.provideCardDaoProvider = DoubleCheck.provider(new SwitchingProvider<CardDao>(singletonCImpl, 1));
       this.providePaymentDaoProvider = DoubleCheck.provider(new SwitchingProvider<PaymentDao>(singletonCImpl, 3));
+      this.provideAccountDaoProvider = DoubleCheck.provider(new SwitchingProvider<AccountDao>(singletonCImpl, 4));
       this.paymentRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<PaymentRepository>(singletonCImpl, 0));
     }
 
@@ -660,7 +683,7 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       public T get() {
         switch (id) {
           case 0: // com.payment.app.data.repository.PaymentRepository 
-          return (T) new PaymentRepository(singletonCImpl.provideCardDaoProvider.get(), singletonCImpl.providePaymentDaoProvider.get());
+          return (T) new PaymentRepository(singletonCImpl.provideCardDaoProvider.get(), singletonCImpl.providePaymentDaoProvider.get(), singletonCImpl.provideAccountDaoProvider.get());
 
           case 1: // com.payment.app.data.db.CardDao 
           return (T) AppModule_ProvideCardDaoFactory.provideCardDao(singletonCImpl.provideDatabaseProvider.get());
@@ -670,6 +693,9 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
           case 3: // com.payment.app.data.db.PaymentDao 
           return (T) AppModule_ProvidePaymentDaoFactory.providePaymentDao(singletonCImpl.provideDatabaseProvider.get());
+
+          case 4: // com.payment.app.data.db.AccountDao 
+          return (T) AppModule_ProvideAccountDaoFactory.provideAccountDao(singletonCImpl.provideDatabaseProvider.get());
 
           default: throw new AssertionError(id);
         }
