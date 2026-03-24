@@ -5,7 +5,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.*;
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -207,7 +207,9 @@ private fun SummaryContent(
             )
             cardList.forEach { card ->
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(start = 16.dp, vertical = 2.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 2.dp, bottom = 2.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(card.cardName)
@@ -215,7 +217,9 @@ private fun SummaryContent(
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, vertical = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 4.dp, bottom = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("小計:", fontWeight = FontWeight.Bold)
