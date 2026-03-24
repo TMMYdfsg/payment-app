@@ -1,30 +1,70 @@
 package com.payment.app.ui.list
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.payment.app.data.model.CardWithPayment
+import com.payment.app.ui.components.AccountSelector
+import com.payment.app.ui.components.MonthSwitcher
+import com.payment.app.ui.components.SummaryMetricCard
 import com.payment.app.ui.components.formatCurrency
 import com.payment.app.ui.theme.getDueDateColor
+import com.payment.app.util.asDisplayLabel
+import com.payment.app.util.calculateBillingDate
+import com.payment.app.util.parseYearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
+    yearMonth: String?,
     onNavigateBack: () -> Unit,
+    onNavigateToAccountManage: () -> Unit,
     viewModel: ListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var editingCard by remember { mutableStateOf<CardWithPayment?>(null) }
     var editAmount by remember { mutableStateOf("") }
+
+    LaunchedEffect(yearMonth) {
+        viewModel.setYearMonth(yearMonth)
+    }
 
     editingCard?.let { card ->
         AlertDialog(
@@ -40,14 +80,19 @@ fun ListScreen(
                 )
             },
             confirmButton = {
-                TextButton(onClick = {
-                    val amount = editAmount.toLongOrNull() ?: 0L
-                    viewModel.updateAmount(card.cardId, amount)
-                    editingCard = null
-                }) { Text("更新") }
+                TextButton(
+                    onClick = {
+                        viewModel.updateAmount(card.cardId, editAmount.toLongOrNull() ?: 0L)
+                        editingCard = null
+                    }
+                ) {
+                    Text("更新")
+                }
             },
             dismissButton = {
-                TextButton(onClick = { editingCard = null }) { Text("キャンセル") }
+                TextButton(onClick = { editingCard = null }) {
+                    Text("キャンセル")
+                }
             }
         )
     }
@@ -60,23 +105,55 @@ fun ListScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "戻る")
                     }
+                },
+                actions = {
+                    TextButton(onClick = onNavigateToAccountManage) {
+                        Text("口座")
+                    }
                 }
             )
         }
     ) { paddingValues ->
         if (uiState.isLoading) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                item {
+                    MonthSwitcher(
+                        label = uiState.monthLabel,
+                        onPrevious = { viewModel.changeMonth(-1L) },
+                        onNext = { viewModel.changeMonth(1L) }
+                    )
+                }
+
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        SummaryMetricCard(
+                            title = "総額",
+                            value = formatCurrency(uiState.totalAmount),
+                            modifier = Modifier.weight(1f)
+                        )
+                        SummaryMetricCard(
+                            title = "未完了",
+                            value = formatCurrency(uiState.unpaidAmount),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+
                 uiState.cardsByDueDate.entries.sortedBy { it.key }.forEach { (dueDate, cards) ->
                     item {
                         val color = getDueDateColor(dueDate)
@@ -85,7 +162,10 @@ fun ListScreen(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.08f))
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -98,61 +178,73 @@ fun ListScreen(
                                         color = color
                                     )
                                     Text(
-                                        "小計: ${formatCurrency(subtotal)}",
-                                        style = MaterialTheme.typography.bodyMedium,
+                                        formatCurrency(subtotal),
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                HorizontalDivider()
                                 cards.forEach { card ->
-                                    Row(
+                                    val billingInfo = calculateBillingDate(parseYearMonth(uiState.selectedYearMonth), card.dueDate)
+                                    Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
                                                 editingCard = card
-                                                editAmount = if (card.amount > 0) card.amount.toString() else ""
+                                                editAmount = card.amount.takeIf { it > 0 }?.toString().orEmpty()
                                             }
-                                            .padding(vertical = 8.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
+                                            .padding(vertical = 4.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        Text(card.cardName, style = MaterialTheme.typography.bodyLarge)
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Column {
+                                                Text(
+                                                    card.cardName,
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                                Text(
+                                                    "予定日: ${billingInfo.scheduledDate.asDisplayLabel()}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
                                             Text(
                                                 formatCurrency(card.amount),
-                                                style = MaterialTheme.typography.bodyLarge,
                                                 fontWeight = if (card.amount > 0) FontWeight.Bold else FontWeight.Normal
                                             )
-                                            Text(
-                                                " ✏️",
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
+                                        }
+                                        AccountSelector(
+                                            accounts = uiState.accounts,
+                                            selectedAccountId = card.accountId,
+                                            selectedLabel = card.accountName,
+                                            onSelected = { viewModel.updateAccount(card.cardId, it) }
+                                        )
+                                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                            Button(
+                                                onClick = { viewModel.updatePaid(card.cardId, !card.isPaid) },
+                                                modifier = Modifier.weight(1f)
+                                            ) {
+                                                Text(if (card.isPaid) "未完了に戻す" else "引落完了")
+                                            }
+                                            Button(
+                                                onClick = {
+                                                    editingCard = card
+                                                    editAmount = card.amount.takeIf { it > 0 }?.toString().orEmpty()
+                                                },
+                                                modifier = Modifier.weight(1f)
+                                            ) {
+                                                Text("金額編集")
+                                            }
                                         }
                                     }
+                                    HorizontalDivider()
                                 }
                             }
                         }
-                    }
-                }
-
-                item {
-                    HorizontalDivider(thickness = 2.dp)
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "💰 総額",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            formatCurrency(uiState.totalAmount),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
                     }
                 }
             }
