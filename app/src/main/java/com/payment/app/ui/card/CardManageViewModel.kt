@@ -29,7 +29,7 @@ class CardManageViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CardManageUiState())
 
     fun addCard(cardName: String, dueDate: Int) {
-        if (cardName.isBlank() || dueDate <= 0) return
+        if (cardName.isBlank() || dueDate !in 1..31) return
         viewModelScope.launch {
             repository.addCard(cardName.trim(), dueDate)
         }

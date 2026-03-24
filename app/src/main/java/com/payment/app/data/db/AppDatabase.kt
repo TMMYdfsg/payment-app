@@ -1,8 +1,6 @@
 package com.payment.app.data.db
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.payment.app.data.db.entity.CardEntity
 import com.payment.app.data.db.entity.PaymentEntity
