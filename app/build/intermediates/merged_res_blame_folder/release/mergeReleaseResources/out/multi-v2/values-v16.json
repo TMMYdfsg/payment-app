@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.payment.app-mergeReleaseResources-71:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\e6c2ca94da0bb7eb4dcf76e1c3bad5d6\\transformed\\appcompat-1.6.1\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    }
+                }
+            ]
+        }
+    ]
+}
