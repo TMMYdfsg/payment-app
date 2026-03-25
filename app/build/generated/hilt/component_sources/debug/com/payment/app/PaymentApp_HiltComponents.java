@@ -1,11 +1,17 @@
 package com.payment.app;
 
 import com.payment.app.di.AppModule;
+import com.payment.app.notifications.MonthlyReceiverEntryPoint;
+import com.payment.app.notifications.WorkerEntryPoint;
 import com.payment.app.ui.account.AccountManageViewModel_HiltModules;
+import com.payment.app.ui.analytics.AnalyticsViewModel_HiltModules;
+import com.payment.app.ui.calendar.CalendarViewModel_HiltModules;
 import com.payment.app.ui.card.CardManageViewModel_HiltModules;
 import com.payment.app.ui.home.HomeViewModel_HiltModules;
 import com.payment.app.ui.input.InputFlowViewModel_HiltModules;
 import com.payment.app.ui.list.ListViewModel_HiltModules;
+import com.payment.app.ui.notification.NotificationSettingsViewModel_HiltModules;
+import com.payment.app.ui.subscription.SubscriptionViewModel_HiltModules;
 import dagger.Binds;
 import dagger.Component;
 import dagger.Module;
@@ -139,6 +145,8 @@ public final class PaymentApp_HiltComponents {
   )
   @Singleton
   public abstract static class SingletonC implements PaymentApp_GeneratedInjector,
+      MonthlyReceiverEntryPoint,
+      WorkerEntryPoint,
       FragmentGetContextFix.FragmentGetContextFixEntryPoint,
       HiltWrapper_ActivityRetainedComponentManager_ActivityRetainedComponentBuilderEntryPoint,
       ServiceComponentManager.ServiceComponentBuilderEntryPoint,
@@ -158,14 +166,18 @@ public final class PaymentApp_HiltComponents {
   @Subcomponent(
       modules = {
           AccountManageViewModel_HiltModules.KeyModule.class,
+          AnalyticsViewModel_HiltModules.KeyModule.class,
+          CalendarViewModel_HiltModules.KeyModule.class,
           CardManageViewModel_HiltModules.KeyModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HiltWrapper_SavedStateHandleModule.class,
           HomeViewModel_HiltModules.KeyModule.class,
           InputFlowViewModel_HiltModules.KeyModule.class,
           ListViewModel_HiltModules.KeyModule.class,
+          NotificationSettingsViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
-          ViewModelCBuilderModule.class
+          ViewModelCBuilderModule.class,
+          SubscriptionViewModel_HiltModules.KeyModule.class
       }
   )
   @ActivityRetainedScoped
@@ -202,11 +214,15 @@ public final class PaymentApp_HiltComponents {
   @Subcomponent(
       modules = {
           AccountManageViewModel_HiltModules.BindsModule.class,
+          AnalyticsViewModel_HiltModules.BindsModule.class,
+          CalendarViewModel_HiltModules.BindsModule.class,
           CardManageViewModel_HiltModules.BindsModule.class,
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
           HomeViewModel_HiltModules.BindsModule.class,
           InputFlowViewModel_HiltModules.BindsModule.class,
-          ListViewModel_HiltModules.BindsModule.class
+          ListViewModel_HiltModules.BindsModule.class,
+          NotificationSettingsViewModel_HiltModules.BindsModule.class,
+          SubscriptionViewModel_HiltModules.BindsModule.class
       }
   )
   @ViewModelScoped

@@ -1,0 +1,2 @@
+03-25 09:44:36.587 30705 30726 I TestRunner: started: useAppContext(com.payment.app.ExampleInstrumentedTest)
+03-25 09:44:36.589 30705 30726 I TestRunner: finished: useAppContext(com.payment.app.ExampleInstrumentedTest)

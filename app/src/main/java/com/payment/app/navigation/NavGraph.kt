@@ -11,6 +11,10 @@ import com.payment.app.ui.card.CardManageScreen
 import com.payment.app.ui.home.HomeScreen
 import com.payment.app.ui.input.InputFlowScreen
 import com.payment.app.ui.list.ListScreen
+import com.payment.app.ui.analytics.AnalyticsScreen
+import com.payment.app.ui.subscription.SubscriptionScreen
+import com.payment.app.ui.calendar.CalendarScreen
+import com.payment.app.ui.notification.NotificationSettingsScreen
 import com.payment.app.util.asStorageKey
 import com.payment.app.util.currentYearMonth
 
@@ -25,6 +29,12 @@ sealed class Screen(val route: String) {
     }
     data object CardManage : Screen("card_manage")
     data object AccountManage : Screen("account_manage")
+    data object Analytics : Screen("analytics?yearMonth={yearMonth}") {
+        fun createRoute(yearMonth: String) = "analytics?yearMonth=$yearMonth"
+    }
+    data object Subscription : Screen("subscription")
+    data object Calendar : Screen("calendar")
+    data object NotificationSettings : Screen("notification_settings")
 }
 
 @Composable
@@ -45,6 +55,16 @@ fun NavGraph() {
                 },
                 onNavigateToAccountManage = {
                     navController.navigate(Screen.AccountManage.route)
+                },
+                onNavigateToAnalytics = { yearMonth ->
+                    navController.navigate(Screen.Analytics.createRoute(yearMonth))
+                },
+                onNavigateToSubscription = {
+                    navController.navigate(Screen.Subscription.route)
+                },
+                onNavigateToNotification = { navController.navigate(Screen.NotificationSettings.route) },
+                onNavigateToCalendar = {
+                    navController.navigate(Screen.Calendar.route)
                 }
             )
         }
@@ -100,6 +120,29 @@ fun NavGraph() {
             AccountManageScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
+        }
+        composable(
+            route = Screen.Analytics.route,
+            arguments = listOf(
+                navArgument("yearMonth") {
+                    type = NavType.StringType
+                    defaultValue = currentYearMonth().asStorageKey()
+                }
+            )
+        ) { backStackEntry ->
+            AnalyticsScreen(
+                yearMonth = backStackEntry.arguments?.getString("yearMonth"),
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.Subscription.route) {
+            SubscriptionScreen(onNavigateBack = { navController.popBackStack() })
+        }
+        composable(Screen.Calendar.route) {
+            CalendarScreen(onNavigateBack = { navController.popBackStack() })
+        }
+        composable(Screen.NotificationSettings.route) {
+            NotificationSettingsScreen(onNavigateBack = { navController.popBackStack() })
         }
     }
 }

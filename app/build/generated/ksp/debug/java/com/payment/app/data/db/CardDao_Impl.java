@@ -44,7 +44,7 @@ public final class CardDao_Impl implements CardDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `cards` (`cardId`,`cardName`,`dueDate`) VALUES (nullif(?, 0),?,?)";
+        return "INSERT OR ABORT INTO `cards` (`cardId`,`cardName`,`dueDate`,`category`,`rewardRate`,`annualFee`) VALUES (nullif(?, 0),?,?,?,?,?)";
       }
 
       @Override
@@ -53,6 +53,9 @@ public final class CardDao_Impl implements CardDao {
         statement.bindLong(1, entity.getCardId());
         statement.bindString(2, entity.getCardName());
         statement.bindLong(3, entity.getDueDate());
+        statement.bindString(4, entity.getCategory());
+        statement.bindDouble(5, entity.getRewardRate());
+        statement.bindLong(6, entity.getAnnualFee());
       }
     };
     this.__deletionAdapterOfCardEntity = new EntityDeletionOrUpdateAdapter<CardEntity>(__db) {
@@ -138,6 +141,9 @@ public final class CardDao_Impl implements CardDao {
           final int _cursorIndexOfCardId = CursorUtil.getColumnIndexOrThrow(_cursor, "cardId");
           final int _cursorIndexOfCardName = CursorUtil.getColumnIndexOrThrow(_cursor, "cardName");
           final int _cursorIndexOfDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "dueDate");
+          final int _cursorIndexOfCategory = CursorUtil.getColumnIndexOrThrow(_cursor, "category");
+          final int _cursorIndexOfRewardRate = CursorUtil.getColumnIndexOrThrow(_cursor, "rewardRate");
+          final int _cursorIndexOfAnnualFee = CursorUtil.getColumnIndexOrThrow(_cursor, "annualFee");
           final List<CardEntity> _result = new ArrayList<CardEntity>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final CardEntity _item;
@@ -147,7 +153,13 @@ public final class CardDao_Impl implements CardDao {
             _tmpCardName = _cursor.getString(_cursorIndexOfCardName);
             final int _tmpDueDate;
             _tmpDueDate = _cursor.getInt(_cursorIndexOfDueDate);
-            _item = new CardEntity(_tmpCardId,_tmpCardName,_tmpDueDate);
+            final String _tmpCategory;
+            _tmpCategory = _cursor.getString(_cursorIndexOfCategory);
+            final float _tmpRewardRate;
+            _tmpRewardRate = _cursor.getFloat(_cursorIndexOfRewardRate);
+            final long _tmpAnnualFee;
+            _tmpAnnualFee = _cursor.getLong(_cursorIndexOfAnnualFee);
+            _item = new CardEntity(_tmpCardId,_tmpCardName,_tmpDueDate,_tmpCategory,_tmpRewardRate,_tmpAnnualFee);
             _result.add(_item);
           }
           return _result;
@@ -177,6 +189,9 @@ public final class CardDao_Impl implements CardDao {
           final int _cursorIndexOfCardId = CursorUtil.getColumnIndexOrThrow(_cursor, "cardId");
           final int _cursorIndexOfCardName = CursorUtil.getColumnIndexOrThrow(_cursor, "cardName");
           final int _cursorIndexOfDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "dueDate");
+          final int _cursorIndexOfCategory = CursorUtil.getColumnIndexOrThrow(_cursor, "category");
+          final int _cursorIndexOfRewardRate = CursorUtil.getColumnIndexOrThrow(_cursor, "rewardRate");
+          final int _cursorIndexOfAnnualFee = CursorUtil.getColumnIndexOrThrow(_cursor, "annualFee");
           final List<CardEntity> _result = new ArrayList<CardEntity>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final CardEntity _item;
@@ -186,7 +201,13 @@ public final class CardDao_Impl implements CardDao {
             _tmpCardName = _cursor.getString(_cursorIndexOfCardName);
             final int _tmpDueDate;
             _tmpDueDate = _cursor.getInt(_cursorIndexOfDueDate);
-            _item = new CardEntity(_tmpCardId,_tmpCardName,_tmpDueDate);
+            final String _tmpCategory;
+            _tmpCategory = _cursor.getString(_cursorIndexOfCategory);
+            final float _tmpRewardRate;
+            _tmpRewardRate = _cursor.getFloat(_cursorIndexOfRewardRate);
+            final long _tmpAnnualFee;
+            _tmpAnnualFee = _cursor.getLong(_cursorIndexOfAnnualFee);
+            _item = new CardEntity(_tmpCardId,_tmpCardName,_tmpDueDate,_tmpCategory,_tmpRewardRate,_tmpAnnualFee);
             _result.add(_item);
           }
           return _result;
@@ -213,6 +234,9 @@ public final class CardDao_Impl implements CardDao {
           final int _cursorIndexOfCardId = CursorUtil.getColumnIndexOrThrow(_cursor, "cardId");
           final int _cursorIndexOfCardName = CursorUtil.getColumnIndexOrThrow(_cursor, "cardName");
           final int _cursorIndexOfDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "dueDate");
+          final int _cursorIndexOfCategory = CursorUtil.getColumnIndexOrThrow(_cursor, "category");
+          final int _cursorIndexOfRewardRate = CursorUtil.getColumnIndexOrThrow(_cursor, "rewardRate");
+          final int _cursorIndexOfAnnualFee = CursorUtil.getColumnIndexOrThrow(_cursor, "annualFee");
           final List<CardEntity> _result = new ArrayList<CardEntity>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final CardEntity _item;
@@ -222,7 +246,13 @@ public final class CardDao_Impl implements CardDao {
             _tmpCardName = _cursor.getString(_cursorIndexOfCardName);
             final int _tmpDueDate;
             _tmpDueDate = _cursor.getInt(_cursorIndexOfDueDate);
-            _item = new CardEntity(_tmpCardId,_tmpCardName,_tmpDueDate);
+            final String _tmpCategory;
+            _tmpCategory = _cursor.getString(_cursorIndexOfCategory);
+            final float _tmpRewardRate;
+            _tmpRewardRate = _cursor.getFloat(_cursorIndexOfRewardRate);
+            final long _tmpAnnualFee;
+            _tmpAnnualFee = _cursor.getLong(_cursorIndexOfAnnualFee);
+            _item = new CardEntity(_tmpCardId,_tmpCardName,_tmpDueDate,_tmpCategory,_tmpRewardRate,_tmpAnnualFee);
             _result.add(_item);
           }
           return _result;

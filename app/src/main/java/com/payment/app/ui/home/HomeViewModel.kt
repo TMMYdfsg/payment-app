@@ -4,6 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payment.app.data.db.entity.BudgetEntity
 import com.payment.app.data.model.CardWithPayment
+import com.payment.app.domain.usecase.ExportPaymentsUseCase
+import com.payment.app.domain.usecase.GetBudgetUseCase
+import com.payment.app.domain.usecase.GetMonthlyPaymentsOnceUseCase
+import com.payment.app.domain.usecase.GetMonthlyPaymentsUseCase
+import com.payment.app.domain.usecase.MarkAllPaidUseCase
+import com.payment.app.domain.usecase.ResetMonthAmountsUseCase
+import com.payment.app.domain.usecase.UpdateBudgetUseCase
+import com.payment.app.notifications.ReminderScheduler
 import com.payment.app.data.repository.PaymentRepository
 import com.payment.app.util.asDisplayLabel
 import com.payment.app.util.asStorageKey
@@ -15,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -50,7 +59,15 @@ data class HomeUiState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: PaymentRepository
+    getMonthlyPaymentsUseCase: GetMonthlyPaymentsUseCase,
+    getBudgetUseCase: GetBudgetUseCase,
+    private val markAllPaidUseCase: MarkAllPaidUseCase,
+    private val updateBudgetUseCase: UpdateBudgetUseCase,
+    private val exportPaymentsUseCase: ExportPaymentsUseCase,
+    private val getMonthlyPaymentsOnceUseCase: GetMonthlyPaymentsOnceUseCase,
+    private val resetMonthAmountsUseCase: ResetMonthAmountsUseCase,
+    private val repository: PaymentRepository,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     private val selectedMonth = MutableStateFlow(currentYearMonth())
@@ -58,8 +75,8 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = selectedMonth
         .flatMapLatest { yearMonth ->
             combine(
-                repository.observeCardPayments(yearMonth.asStorageKey()),
-                repository.observeBudget(yearMonth.asStorageKey(), null)
+                getMonthlyPaymentsUseCase(yearMonth.asStorageKey()),
+                getBudgetUseCase(yearMonth.asStorageKey(), null)
             ) { cards, budget ->
                 buildUiState(yearMonth, cards, budget)
             }
@@ -72,24 +89,35 @@ class HomeViewModel @Inject constructor(
 
     fun resetSelectedMonth() {
         viewModelScope.launch {
-            repository.resetMonthAmounts(selectedMonth.value.asStorageKey())
+            resetMonthAmountsUseCase(selectedMonth.value.asStorageKey())
         }
     }
 
     fun markAllPaid() {
         viewModelScope.launch {
-            repository.markAllPaid(selectedMonth.value.asStorageKey())
+            markAllPaidUseCase(selectedMonth.value.asStorageKey())
         }
     }
 
     fun updateBudget(amount: Long) {
         viewModelScope.launch {
-            repository.upsertBudget(selectedMonth.value.asStorageKey(), null, amount)
+            updateBudgetUseCase(selectedMonth.value.asStorageKey(), null, amount)
         }
     }
 
     suspend fun getCurrentPayments(): List<CardWithPayment> =
-        repository.getCardPaymentsOnce(selectedMonth.value.asStorageKey())
+        getMonthlyPaymentsOnceUseCase(selectedMonth.value.asStorageKey())
+
+    suspend fun exportCurrentMonth(): String? =
+        exportPaymentsUseCase(selectedMonth.value.asStorageKey())
+
+    fun rescheduleNotifications() {
+        viewModelScope.launch {
+            val day = repository.observeNotificationSetting().first()?.monthlyReminderDay ?: 1
+            reminderScheduler.scheduleDailyChecks()
+            reminderScheduler.scheduleMonthlyReminder(day)
+        }
+    }
 
     init {
         viewModelScope.launch {

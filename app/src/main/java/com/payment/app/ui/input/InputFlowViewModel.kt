@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payment.app.data.db.entity.BankAccountEntity
 import com.payment.app.data.model.CardWithPayment
+import com.payment.app.domain.usecase.GetMonthlyPaymentsOnceUseCase
+import com.payment.app.domain.usecase.UpdatePaymentAccountUseCase
+import com.payment.app.domain.usecase.UpdatePaymentAmountUseCase
+import com.payment.app.domain.usecase.UpdatePaymentPaidUseCase
 import com.payment.app.data.repository.PaymentRepository
 import com.payment.app.util.asStorageKey
 import com.payment.app.util.currentYearMonth
@@ -29,7 +33,11 @@ data class InputFlowUiState(
 
 @HiltViewModel
 class InputFlowViewModel @Inject constructor(
-    private val repository: PaymentRepository
+    private val repository: PaymentRepository,
+    private val getMonthlyPaymentsOnceUseCase: GetMonthlyPaymentsOnceUseCase,
+    private val updatePaymentAmountUseCase: UpdatePaymentAmountUseCase,
+    private val updatePaymentPaidUseCase: UpdatePaymentPaidUseCase,
+    private val updatePaymentAccountUseCase: UpdatePaymentAccountUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(InputFlowUiState())
@@ -40,7 +48,7 @@ class InputFlowViewModel @Inject constructor(
             repository.initializeDefaultAccounts()
             repository.initializeDefaultCards()
             val yearMonth = parseYearMonth(yearMonthValue).asStorageKey()
-            val allCards = repository.getCardPaymentsOnce(yearMonth)
+            val allCards = getMonthlyPaymentsOnceUseCase(yearMonth)
             val cards = if (dueDate != null) {
                 allCards.filter { it.dueDate == dueDate }
             } else {
@@ -80,7 +88,7 @@ class InputFlowViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            repository.upsertPayment(currentCard.cardId, state.selectedYearMonth, amount)
+            updatePaymentAmountUseCase(currentCard.cardId, state.selectedYearMonth, amount)
             applyCardUpdate(updatedCard)
             moveNextOrShowSummary()
         }
@@ -95,7 +103,7 @@ class InputFlowViewModel @Inject constructor(
         val currentCard = state.cards.getOrNull(state.currentIndex) ?: return
         val account = state.accounts.firstOrNull { it.accountId == accountId }
         viewModelScope.launch {
-            repository.updatePaymentAccount(currentCard.cardId, state.selectedYearMonth, accountId)
+            updatePaymentAccountUseCase(currentCard.cardId, state.selectedYearMonth, accountId)
             applyCardUpdate(
                 currentCard.copy(
                     accountId = account?.accountId,
@@ -110,7 +118,7 @@ class InputFlowViewModel @Inject constructor(
         val currentCard = state.cards.getOrNull(state.currentIndex) ?: return
         val nextPaid = !currentCard.isPaid
         viewModelScope.launch {
-            repository.updatePaymentPaid(currentCard.cardId, state.selectedYearMonth, nextPaid)
+            updatePaymentPaidUseCase(currentCard.cardId, state.selectedYearMonth, nextPaid)
             applyCardUpdate(
                 currentCard.copy(
                     isPaid = nextPaid,

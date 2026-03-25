@@ -8,147 +8,364 @@
 8        android:minSdkVersion="26"
 9        android:targetSdkVersion="34" />
 10
-11    <permission
-11-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\334d9450f606283dea54c352ba42ee09\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
-12        android:name="com.payment.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-12-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\334d9450f606283dea54c352ba42ee09\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
-13        android:protectionLevel="signature" />
-13-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\334d9450f606283dea54c352ba42ee09\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
-14
-15    <uses-permission android:name="com.payment.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-15-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\334d9450f606283dea54c352ba42ee09\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
-15-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\334d9450f606283dea54c352ba42ee09\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
-16
-17    <application
-17-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:4:5-22:19
-18        android:name="com.payment.app.PaymentApp"
-18-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:5:9-35
-19        android:allowBackup="true"
-19-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:6:9-35
-20        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-20-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\334d9450f606283dea54c352ba42ee09\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
-21        android:debuggable="true"
-22        android:extractNativeLibs="false"
-23        android:icon="@mipmap/ic_launcher"
-23-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:7:9-43
-24        android:label="@string/app_name"
-24-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:8:9-41
-25        android:roundIcon="@mipmap/ic_launcher_round"
-25-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:9:9-54
-26        android:supportsRtl="true"
-26-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:10:9-35
-27        android:testOnly="true"
-28        android:theme="@style/Theme.PaymentApp" >
-28-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:11:9-48
-29        <activity
-29-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:12:9-21:20
-30            android:name="com.payment.app.MainActivity"
-30-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:13:13-41
-31            android:exported="true"
-31-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:14:13-36
-32            android:label="@string/app_name"
-32-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:15:13-45
-33            android:theme="@style/Theme.PaymentApp" >
-33-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:16:13-52
-34            <intent-filter>
-34-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:17:13-20:29
-35                <action android:name="android.intent.action.MAIN" />
-35-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:18:17-69
-35-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:18:25-66
-36
-37                <category android:name="android.intent.category.LAUNCHER" />
-37-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:19:17-77
-37-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:19:27-74
-38            </intent-filter>
-39        </activity>
-40
-41        <provider
-41-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\92d31cb221ee32d6c577c9ef22e6fb4c\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
-42            android:name="androidx.startup.InitializationProvider"
-42-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\92d31cb221ee32d6c577c9ef22e6fb4c\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
-43            android:authorities="com.payment.app.androidx-startup"
-43-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\92d31cb221ee32d6c577c9ef22e6fb4c\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
-44            android:exported="false" >
-44-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\92d31cb221ee32d6c577c9ef22e6fb4c\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
-45            <meta-data
-45-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\92d31cb221ee32d6c577c9ef22e6fb4c\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
-46                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-46-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\92d31cb221ee32d6c577c9ef22e6fb4c\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
-47                android:value="androidx.startup" />
-47-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\92d31cb221ee32d6c577c9ef22e6fb4c\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
-48            <meta-data
-48-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\tomoy\.gradle\caches\8.9\transforms\2ab1bb54ddef8ea9539cd6e6c52575f5\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:29:13-31:52
-49                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-49-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\tomoy\.gradle\caches\8.9\transforms\2ab1bb54ddef8ea9539cd6e6c52575f5\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:30:17-78
-50                android:value="androidx.startup" />
-50-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\tomoy\.gradle\caches\8.9\transforms\2ab1bb54ddef8ea9539cd6e6c52575f5\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:31:17-49
-51            <meta-data
-51-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
-52                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-52-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
-53                android:value="androidx.startup" />
-53-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
-54        </provider>
-55
-56        <activity
-56-->[androidx.compose.ui:ui-test-manifest:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\7dd904f038b49a0ccbc1fb431dca7c74\transformed\ui-test-manifest-1.7.3\AndroidManifest.xml:23:9-25:39
-57            android:name="androidx.activity.ComponentActivity"
-57-->[androidx.compose.ui:ui-test-manifest:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\7dd904f038b49a0ccbc1fb431dca7c74\transformed\ui-test-manifest-1.7.3\AndroidManifest.xml:24:13-63
-58            android:exported="true" />
-58-->[androidx.compose.ui:ui-test-manifest:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\7dd904f038b49a0ccbc1fb431dca7c74\transformed\ui-test-manifest-1.7.3\AndroidManifest.xml:25:13-36
-59        <activity
-59-->[androidx.compose.ui:ui-tooling-android:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\c60d0fdc23fb27267d80ec033eef4b1f\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
-60            android:name="androidx.compose.ui.tooling.PreviewActivity"
-60-->[androidx.compose.ui:ui-tooling-android:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\c60d0fdc23fb27267d80ec033eef4b1f\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
-61            android:exported="true" />
-61-->[androidx.compose.ui:ui-tooling-android:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\c60d0fdc23fb27267d80ec033eef4b1f\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
-62
-63        <service
-63-->[androidx.room:room-runtime:2.6.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\881dc68195a6fd4f1bc10f20d11c63d5\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
-64            android:name="androidx.room.MultiInstanceInvalidationService"
-64-->[androidx.room:room-runtime:2.6.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\881dc68195a6fd4f1bc10f20d11c63d5\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
-65            android:directBootAware="true"
-65-->[androidx.room:room-runtime:2.6.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\881dc68195a6fd4f1bc10f20d11c63d5\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
-66            android:exported="false" />
-66-->[androidx.room:room-runtime:2.6.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\881dc68195a6fd4f1bc10f20d11c63d5\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
-67
-68        <receiver
-68-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
-69            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-69-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
-70            android:directBootAware="false"
-70-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
-71            android:enabled="true"
-71-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
-72            android:exported="true"
-72-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
-73            android:permission="android.permission.DUMP" >
-73-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
-74            <intent-filter>
-74-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
-75                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-75-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
-75-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
-76            </intent-filter>
-77            <intent-filter>
-77-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
-78                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-78-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
-78-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
-79            </intent-filter>
-80            <intent-filter>
-80-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
-81                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-81-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
-81-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
-82            </intent-filter>
-83            <intent-filter>
-83-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
-84                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-84-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
-84-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\810c1bbbd29237a9e45bceaa24dce2e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
-85            </intent-filter>
-86        </receiver>
-87    </application>
-88
-89</manifest>
+11    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+11-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:3:5-77
+11-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:3:22-74
+12    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+12-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:4:5-79
+12-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:4:22-76
+13    <uses-permission android:name="android.permission.USE_BIOMETRIC" /> <!-- suppress DeprecatedClassUsageInspection -->
+13-->[androidx.biometric:biometric:1.1.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\5e20581cd86e63b04eebfd83bc5d6878\transformed\biometric-1.1.0\AndroidManifest.xml:24:5-72
+13-->[androidx.biometric:biometric:1.1.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\5e20581cd86e63b04eebfd83bc5d6878\transformed\biometric-1.1.0\AndroidManifest.xml:24:22-69
+14    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+14-->[androidx.biometric:biometric:1.1.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\5e20581cd86e63b04eebfd83bc5d6878\transformed\biometric-1.1.0\AndroidManifest.xml:27:5-74
+14-->[androidx.biometric:biometric:1.1.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\5e20581cd86e63b04eebfd83bc5d6878\transformed\biometric-1.1.0\AndroidManifest.xml:27:22-71
+15    <uses-permission android:name="android.permission.WAKE_LOCK" />
+15-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:23:5-68
+15-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:23:22-65
+16    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+16-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:24:5-79
+16-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:24:22-76
+17    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+17-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:25:5-81
+17-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:25:22-78
+18    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+18-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:26:5-77
+18-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:26:22-74
+19
+20    <permission
+20-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\0788a40bfcb30258e82e8a2e6ca80af9\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+21        android:name="com.payment.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+21-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\0788a40bfcb30258e82e8a2e6ca80af9\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+22        android:protectionLevel="signature" />
+22-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\0788a40bfcb30258e82e8a2e6ca80af9\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+23
+24    <uses-permission android:name="com.payment.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+24-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\0788a40bfcb30258e82e8a2e6ca80af9\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+24-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\0788a40bfcb30258e82e8a2e6ca80af9\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+25
+26    <application
+26-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:6:5-28:19
+27        android:name="com.payment.app.PaymentApp"
+27-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:7:9-35
+28        android:allowBackup="true"
+28-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:8:9-35
+29        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+29-->[androidx.core:core:1.13.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\0788a40bfcb30258e82e8a2e6ca80af9\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+30        android:debuggable="true"
+31        android:extractNativeLibs="false"
+32        android:icon="@mipmap/ic_launcher"
+32-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:9:9-43
+33        android:label="@string/app_name"
+33-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:10:9-41
+34        android:roundIcon="@mipmap/ic_launcher_round"
+34-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:11:9-54
+35        android:supportsRtl="true"
+35-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:12:9-35
+36        android:theme="@style/Theme.PaymentApp" >
+36-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:13:9-48
+37        <activity
+37-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:14:9-23:20
+38            android:name="com.payment.app.MainActivity"
+38-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:15:13-41
+39            android:exported="true"
+39-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:16:13-36
+40            android:label="@string/app_name"
+40-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:17:13-45
+41            android:theme="@style/Theme.PaymentApp" >
+41-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:18:13-52
+42            <intent-filter>
+42-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:19:13-22:29
+43                <action android:name="android.intent.action.MAIN" />
+43-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:20:17-69
+43-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:20:25-66
+44
+45                <category android:name="android.intent.category.LAUNCHER" />
+45-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:21:17-77
+45-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:21:27-74
+46            </intent-filter>
+47        </activity>
+48
+49        <receiver
+49-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:25:9-27:40
+50            android:name="com.payment.app.notifications.MonthlyReminderReceiver"
+50-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:26:13-66
+51            android:exported="false" />
+51-->C:\Users\tomoy\AndroidStudioProjects\payment-app\app\src\main\AndroidManifest.xml:27:13-37
+52
+53        <provider
+53-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:29:9-37:20
+54            android:name="androidx.startup.InitializationProvider"
+54-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:30:13-67
+55            android:authorities="com.payment.app.androidx-startup"
+55-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:31:13-68
+56            android:exported="false" >
+56-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:32:13-37
+57            <meta-data
+57-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:34:13-36:52
+58                android:name="androidx.work.WorkManagerInitializer"
+58-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:35:17-68
+59                android:value="androidx.startup" />
+59-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:36:17-49
+60            <meta-data
+60-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\9b22928b7b8ad43780fc0b8e69111d57\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+61                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+61-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\9b22928b7b8ad43780fc0b8e69111d57\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+62                android:value="androidx.startup" />
+62-->[androidx.emoji2:emoji2:1.3.0] C:\Users\tomoy\.gradle\caches\8.9\transforms\9b22928b7b8ad43780fc0b8e69111d57\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+63            <meta-data
+63-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\tomoy\.gradle\caches\8.9\transforms\4632c1eb74b41adf0c38121ba5ef27b5\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:29:13-31:52
+64                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+64-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\tomoy\.gradle\caches\8.9\transforms\4632c1eb74b41adf0c38121ba5ef27b5\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:30:17-78
+65                android:value="androidx.startup" />
+65-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\tomoy\.gradle\caches\8.9\transforms\4632c1eb74b41adf0c38121ba5ef27b5\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:31:17-49
+66            <meta-data
+66-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+67                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+67-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+68                android:value="androidx.startup" />
+68-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+69        </provider>
+70
+71        <service
+71-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:39:9-45:35
+72            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+72-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:40:13-88
+73            android:directBootAware="false"
+73-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:41:13-44
+74            android:enabled="@bool/enable_system_alarm_service_default"
+74-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:42:13-72
+75            android:exported="false" />
+75-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:43:13-37
+76        <service
+76-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:46:9-52:35
+77            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+77-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:47:13-84
+78            android:directBootAware="false"
+78-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:48:13-44
+79            android:enabled="@bool/enable_system_job_service_default"
+79-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:49:13-70
+80            android:exported="true"
+80-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:50:13-36
+81            android:permission="android.permission.BIND_JOB_SERVICE" />
+81-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:51:13-69
+82        <service
+82-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:53:9-59:35
+83            android:name="androidx.work.impl.foreground.SystemForegroundService"
+83-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:54:13-81
+84            android:directBootAware="false"
+84-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:55:13-44
+85            android:enabled="@bool/enable_system_foreground_service_default"
+85-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:56:13-77
+86            android:exported="false" />
+86-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:57:13-37
+87
+88        <receiver
+88-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:61:9-66:35
+89            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+89-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:62:13-88
+90            android:directBootAware="false"
+90-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:63:13-44
+91            android:enabled="true"
+91-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:64:13-35
+92            android:exported="false" />
+92-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:65:13-37
+93        <receiver
+93-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:67:9-77:20
+94            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+94-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:68:13-106
+95            android:directBootAware="false"
+95-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:69:13-44
+96            android:enabled="false"
+96-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:70:13-36
+97            android:exported="false" >
+97-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:71:13-37
+98            <intent-filter>
+98-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:73:13-76:29
+99                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+99-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:74:17-87
+99-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:74:25-84
+100                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+100-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:75:17-90
+100-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:75:25-87
+101            </intent-filter>
+102        </receiver>
+103        <receiver
+103-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:78:9-88:20
+104            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+104-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:79:13-104
+105            android:directBootAware="false"
+105-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:80:13-44
+106            android:enabled="false"
+106-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:81:13-36
+107            android:exported="false" >
+107-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:82:13-37
+108            <intent-filter>
+108-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:84:13-87:29
+109                <action android:name="android.intent.action.BATTERY_OKAY" />
+109-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:85:17-77
+109-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:85:25-74
+110                <action android:name="android.intent.action.BATTERY_LOW" />
+110-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:86:17-76
+110-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:86:25-73
+111            </intent-filter>
+112        </receiver>
+113        <receiver
+113-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:89:9-99:20
+114            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+114-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:90:13-104
+115            android:directBootAware="false"
+115-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:91:13-44
+116            android:enabled="false"
+116-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:92:13-36
+117            android:exported="false" >
+117-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:93:13-37
+118            <intent-filter>
+118-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:95:13-98:29
+119                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+119-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:96:17-83
+119-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:96:25-80
+120                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+120-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:97:17-82
+120-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:97:25-79
+121            </intent-filter>
+122        </receiver>
+123        <receiver
+123-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:100:9-109:20
+124            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+124-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:101:13-103
+125            android:directBootAware="false"
+125-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:102:13-44
+126            android:enabled="false"
+126-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:103:13-36
+127            android:exported="false" >
+127-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:104:13-37
+128            <intent-filter>
+128-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:106:13-108:29
+129                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+129-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:107:17-79
+129-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:107:25-76
+130            </intent-filter>
+131        </receiver>
+132        <receiver
+132-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:110:9-121:20
+133            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+133-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:111:13-88
+134            android:directBootAware="false"
+134-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:112:13-44
+135            android:enabled="false"
+135-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:113:13-36
+136            android:exported="false" >
+136-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:114:13-37
+137            <intent-filter>
+137-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:116:13-120:29
+138                <action android:name="android.intent.action.BOOT_COMPLETED" />
+138-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:117:17-79
+138-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:117:25-76
+139                <action android:name="android.intent.action.TIME_SET" />
+139-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:118:17-73
+139-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:118:25-70
+140                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+140-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:119:17-81
+140-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:119:25-78
+141            </intent-filter>
+142        </receiver>
+143        <receiver
+143-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:122:9-131:20
+144            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+144-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:123:13-99
+145            android:directBootAware="false"
+145-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:124:13-44
+146            android:enabled="@bool/enable_system_alarm_service_default"
+146-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:125:13-72
+147            android:exported="false" >
+147-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:126:13-37
+148            <intent-filter>
+148-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:128:13-130:29
+149                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+149-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:129:17-98
+149-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:129:25-95
+150            </intent-filter>
+151        </receiver>
+152        <receiver
+152-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:132:9-142:20
+153            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+153-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:133:13-78
+154            android:directBootAware="false"
+154-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:134:13-44
+155            android:enabled="true"
+155-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:135:13-35
+156            android:exported="true"
+156-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:136:13-36
+157            android:permission="android.permission.DUMP" >
+157-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:137:13-57
+158            <intent-filter>
+158-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:139:13-141:29
+159                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+159-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:140:17-88
+159-->[androidx.work:work-runtime:2.9.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\da4cc75615662f77722f62a3e2818962\transformed\work-runtime-2.9.1\AndroidManifest.xml:140:25-85
+160            </intent-filter>
+161        </receiver>
+162
+163        <activity
+163-->[androidx.compose.ui:ui-test-manifest:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\27f7d31b15b05040bb249423bd10897b\transformed\ui-test-manifest-1.7.3\AndroidManifest.xml:23:9-25:39
+164            android:name="androidx.activity.ComponentActivity"
+164-->[androidx.compose.ui:ui-test-manifest:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\27f7d31b15b05040bb249423bd10897b\transformed\ui-test-manifest-1.7.3\AndroidManifest.xml:24:13-63
+165            android:exported="true" />
+165-->[androidx.compose.ui:ui-test-manifest:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\27f7d31b15b05040bb249423bd10897b\transformed\ui-test-manifest-1.7.3\AndroidManifest.xml:25:13-36
+166        <activity
+166-->[androidx.compose.ui:ui-tooling-android:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\590189d3ca1e753f470c8b0aecd5ff20\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+167            android:name="androidx.compose.ui.tooling.PreviewActivity"
+167-->[androidx.compose.ui:ui-tooling-android:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\590189d3ca1e753f470c8b0aecd5ff20\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+168            android:exported="true" />
+168-->[androidx.compose.ui:ui-tooling-android:1.7.3] C:\Users\tomoy\.gradle\caches\8.9\transforms\590189d3ca1e753f470c8b0aecd5ff20\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+169
+170        <service
+170-->[androidx.room:room-runtime:2.6.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\2c345e051b29f96720974fdc4ba17662\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+171            android:name="androidx.room.MultiInstanceInvalidationService"
+171-->[androidx.room:room-runtime:2.6.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\2c345e051b29f96720974fdc4ba17662\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+172            android:directBootAware="true"
+172-->[androidx.room:room-runtime:2.6.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\2c345e051b29f96720974fdc4ba17662\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+173            android:exported="false" />
+173-->[androidx.room:room-runtime:2.6.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\2c345e051b29f96720974fdc4ba17662\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+174
+175        <receiver
+175-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+176            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+176-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+177            android:directBootAware="false"
+177-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+178            android:enabled="true"
+178-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+179            android:exported="true"
+179-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+180            android:permission="android.permission.DUMP" >
+180-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+181            <intent-filter>
+181-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+182                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+182-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+182-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+183            </intent-filter>
+184            <intent-filter>
+184-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+185                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+185-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+185-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+186            </intent-filter>
+187            <intent-filter>
+187-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+188                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+188-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+188-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+189            </intent-filter>
+190            <intent-filter>
+190-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+191                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+191-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+191-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tomoy\.gradle\caches\8.9\transforms\82c10873b0659cc810cc7c199888641c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+192            </intent-filter>
+193        </receiver>
+194    </application>
+195
+196</manifest>

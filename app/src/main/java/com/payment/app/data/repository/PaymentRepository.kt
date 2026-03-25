@@ -4,10 +4,16 @@ import com.payment.app.data.db.AccountDao
 import com.payment.app.data.db.BudgetDao
 import com.payment.app.data.db.CardDao
 import com.payment.app.data.db.PaymentDao
+import com.payment.app.data.db.InstallmentDao
+import com.payment.app.data.db.NotificationSettingDao
+import com.payment.app.data.db.SubscriptionDao
 import com.payment.app.data.db.entity.BankAccountEntity
 import com.payment.app.data.db.entity.BudgetEntity
 import com.payment.app.data.db.entity.CardEntity
+import com.payment.app.data.db.entity.InstallmentEntity
+import com.payment.app.data.db.entity.NotificationSettingEntity
 import com.payment.app.data.db.entity.PaymentEntity
+import com.payment.app.data.db.entity.SubscriptionEntity
 import com.payment.app.data.model.CardWithPayment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -19,7 +25,10 @@ class PaymentRepository @Inject constructor(
     private val cardDao: CardDao,
     private val paymentDao: PaymentDao,
     private val accountDao: AccountDao,
-    private val budgetDao: BudgetDao
+    private val budgetDao: BudgetDao,
+    private val subscriptionDao: SubscriptionDao,
+    private val installmentDao: InstallmentDao,
+    private val notificationSettingDao: NotificationSettingDao
 ) {
     val allCards: Flow<List<CardEntity>> = cardDao.getAllCards()
     val allAccounts: Flow<List<BankAccountEntity>> = accountDao.getAllAccounts()
@@ -41,6 +50,10 @@ class PaymentRepository @Inject constructor(
 
     fun observeBudgets(yearMonth: String): Flow<List<BudgetEntity>> =
         budgetDao.getBudgetsByMonth(yearMonth)
+
+    fun observeSubscriptions(): Flow<List<SubscriptionEntity>> = subscriptionDao.getActiveSubscriptions()
+    fun observeInstallments(): Flow<List<InstallmentEntity>> = installmentDao.getAllInstallments()
+    fun observeNotificationSetting(): Flow<NotificationSettingEntity?> = notificationSettingDao.getSettings()
 
     suspend fun addCard(cardName: String, dueDate: Int, category: String): Long =
         cardDao.insertCard(CardEntity(cardName = cardName, dueDate = dueDate, category = category))
@@ -117,12 +130,12 @@ class PaymentRepository @Inject constructor(
     suspend fun initializeDefaultCards() {
         if (cardDao.getCardCount() == 0) {
             val defaults = listOf(
-                CardEntity(cardName = "PayPay", dueDate = 26),
-                CardEntity(cardName = "NL", dueDate = 26),
-                CardEntity(cardName = "Amazon", dueDate = 26),
-                CardEntity(cardName = "楽天", dueDate = 27),
-                CardEntity(cardName = "EPOS", dueDate = 27),
-                CardEntity(cardName = "メルカード", dueDate = 31)
+                CardEntity(cardName = "PayPay", dueDate = 26, rewardRate = 1.0f),
+                CardEntity(cardName = "NL", dueDate = 26, rewardRate = 1.0f),
+                CardEntity(cardName = "Amazon", dueDate = 26, rewardRate = 1.0f),
+                CardEntity(cardName = "楽天", dueDate = 27, rewardRate = 1.0f),
+                CardEntity(cardName = "EPOS", dueDate = 27, rewardRate = 1.0f),
+                CardEntity(cardName = "メルカード", dueDate = 31, rewardRate = 1.0f)
             )
             cardDao.insertCards(defaults)
         }
@@ -154,6 +167,30 @@ class PaymentRepository @Inject constructor(
             )
         )
     }
+
+    suspend fun upsertSubscription(entity: SubscriptionEntity) = subscriptionDao.upsert(entity)
+    suspend fun upsertInstallment(entity: InstallmentEntity) = installmentDao.upsert(entity)
+    suspend fun upsertNotificationSetting(setting: NotificationSettingEntity) =
+        notificationSettingDao.upsert(setting)
+
+    suspend fun ensurePaymentRecord(cardId: Long, yearMonth: String): Long {
+        val existing = paymentDao.getPaymentByCardIdAndMonth(cardId, yearMonth)
+        if (existing != null) return existing.paymentId
+        val defaultAccountId = accountDao.getFirstAccountId()
+        paymentDao.insertOrUpdatePayment(
+            PaymentEntity(
+                cardId = cardId,
+                yearMonth = yearMonth,
+                amount = 0L,
+                isPaid = false,
+                accountId = defaultAccountId,
+                completedAt = null
+            )
+        )
+        return paymentDao.getPaymentByCardIdAndMonth(cardId, yearMonth)?.paymentId ?: 0L
+    }
+
+    suspend fun getPaymentById(paymentId: Long): PaymentEntity? = paymentDao.getPaymentById(paymentId)
 
     private suspend fun upsertMonthlyPayment(
         cardId: Long,

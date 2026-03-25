@@ -8,5 +8,7 @@ data class CardEntity(
     @PrimaryKey(autoGenerate = true) val cardId: Long = 0,
     val cardName: String,
     val dueDate: Int,
-    val category: String = ""
+    val category: String = "",
+    val rewardRate: Float = 1.0f,
+    val annualFee: Long = 0L
 )

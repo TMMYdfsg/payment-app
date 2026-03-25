@@ -15,6 +15,9 @@ interface PaymentDao {
     @Query("SELECT * FROM payments WHERE cardId = :cardId AND yearMonth = :yearMonth LIMIT 1")
     suspend fun getPaymentByCardIdAndMonth(cardId: Long, yearMonth: String): PaymentEntity?
 
+    @Query("SELECT * FROM payments WHERE paymentId = :paymentId LIMIT 1")
+    suspend fun getPaymentById(paymentId: Long): PaymentEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdatePayment(payment: PaymentEntity)
 

@@ -1,0 +1,28 @@
+情報: Constructing runner from config.
+情報: Configuring Android Instrumentation driver: android_instrumentation_runtime {
+  instrumentation_info {
+    app_package: "com.payment.app"
+    test_package: "com.payment.app.test"
+    test_runner_class: "androidx.test.runner.AndroidJUnitRunner"
+  }
+  instrumentation_args {
+    args_map {
+      key: "additionalTestOutputDir"
+      value: "/sdcard/Android/media/com.payment.app/additional_test_output"
+    }
+  }
+}
+am_instrument_timeout: 31536000
+
+情報: No installables found in test fixture. Nothing to install.
+情報: Installing [C:\Users\tomoy\AndroidStudioProjects\payment-app\app\build\outputs\apk\debug\app-debug.apk] on device R5CW3393YMM.
+情報: Installing [C:\Users\tomoy\AndroidStudioProjects\payment-app\app\build\outputs\apk\androidTest\debug\app-debug-androidTest.apk] on device R5CW3393YMM.
+情報: Start logcat streaming.
+警告: Shell command failed (255): appops set androidx.test.services MANAGE_EXTERNAL_STORAGE allow
+Error: No UID for androidx.test.services in user 0
+情報: Running Android Instrumentation driver.
+情報: Stop logcat streaming.
+情報: Uninstalling com.payment.app for device R5CW3393YMM.
+情報: Uninstalling com.payment.app.test for device R5CW3393YMM.
+情報: Execute com.payment.app.ExampleInstrumentedTest.useAppContext: PASSED
+情報: Execute com.payment.app.SmokeTest.appStarts: PASSED

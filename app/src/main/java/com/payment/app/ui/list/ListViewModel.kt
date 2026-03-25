@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payment.app.data.db.entity.BankAccountEntity
 import com.payment.app.data.model.CardWithPayment
+import com.payment.app.domain.usecase.GetMonthlyPaymentsUseCase
+import com.payment.app.domain.usecase.UpdatePaymentAccountUseCase
+import com.payment.app.domain.usecase.UpdatePaymentAmountUseCase
+import com.payment.app.domain.usecase.UpdatePaymentPaidUseCase
 import com.payment.app.data.repository.PaymentRepository
 import com.payment.app.util.asDisplayLabel
 import com.payment.app.util.asStorageKey
@@ -34,6 +38,10 @@ data class ListUiState(
 
 @HiltViewModel
 class ListViewModel @Inject constructor(
+    getMonthlyPaymentsUseCase: GetMonthlyPaymentsUseCase,
+    private val updatePaymentAmountUseCase: UpdatePaymentAmountUseCase,
+    private val updatePaymentPaidUseCase: UpdatePaymentPaidUseCase,
+    private val updatePaymentAccountUseCase: UpdatePaymentAccountUseCase,
     private val repository: PaymentRepository
 ) : ViewModel() {
 
@@ -42,7 +50,7 @@ class ListViewModel @Inject constructor(
     val uiState: StateFlow<ListUiState> = selectedMonth
         .flatMapLatest { yearMonth ->
             combine(
-                repository.observeCardPayments(yearMonth.asStorageKey()),
+                getMonthlyPaymentsUseCase(yearMonth.asStorageKey()),
                 repository.allAccounts
             ) { cards, accounts ->
                 val grouped = cards.groupBy { it.dueDate }
@@ -80,19 +88,19 @@ class ListViewModel @Inject constructor(
 
     fun updateAmount(cardId: Long, amount: Long) {
         viewModelScope.launch {
-            repository.upsertPayment(cardId, selectedMonth.value.asStorageKey(), amount)
+            updatePaymentAmountUseCase(cardId, selectedMonth.value.asStorageKey(), amount)
         }
     }
 
     fun updatePaid(cardId: Long, isPaid: Boolean) {
         viewModelScope.launch {
-            repository.updatePaymentPaid(cardId, selectedMonth.value.asStorageKey(), isPaid)
+            updatePaymentPaidUseCase(cardId, selectedMonth.value.asStorageKey(), isPaid)
         }
     }
 
     fun updateAccount(cardId: Long, accountId: Long?) {
         viewModelScope.launch {
-            repository.updatePaymentAccount(cardId, selectedMonth.value.asStorageKey(), accountId)
+            updatePaymentAccountUseCase(cardId, selectedMonth.value.asStorageKey(), accountId)
         }
     }
 }

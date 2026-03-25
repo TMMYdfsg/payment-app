@@ -9,6 +9,10 @@ import com.payment.app.data.db.AppDatabase
 import com.payment.app.data.db.CardDao
 import com.payment.app.data.db.BudgetDao
 import com.payment.app.data.db.PaymentDao
+import com.payment.app.data.db.SubscriptionDao
+import com.payment.app.data.db.InstallmentDao
+import com.payment.app.data.db.NotificationSettingDao
+import com.payment.app.data.datastore.SettingsDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -88,6 +92,72 @@ object AppModule {
                 )
                 """.trimIndent()
             )
+            database.execSQL(
+                """
+                CREATE UNIQUE INDEX IF NOT EXISTS index_budgets_yearMonth_category
+                ON budgets(yearMonth, category)
+                """.trimIndent()
+            )
+        }
+    }
+    private val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE cards ADD COLUMN rewardRate REAL NOT NULL DEFAULT 1.0")
+            database.execSQL("ALTER TABLE cards ADD COLUMN annualFee INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+    private val MIGRATION_4_5 = object : Migration(4, 5) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS subscriptions (
+                    subscriptionId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    cardId INTEGER NOT NULL,
+                    serviceName TEXT NOT NULL,
+                    amount INTEGER NOT NULL,
+                    billingDay INTEGER NOT NULL,
+                    isActive INTEGER NOT NULL DEFAULT 1,
+                    FOREIGN KEY(cardId) REFERENCES cards(cardId) ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent()
+            )
+            database.execSQL(
+                """
+                CREATE INDEX IF NOT EXISTS index_subscriptions_cardId ON subscriptions(cardId)
+                """.trimIndent()
+            )
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS installments (
+                    installmentId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    paymentId INTEGER NOT NULL,
+                    totalAmount INTEGER NOT NULL,
+                    totalMonths INTEGER NOT NULL,
+                    startYearMonth TEXT NOT NULL,
+                    FOREIGN KEY(paymentId) REFERENCES payments(paymentId) ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent()
+            )
+            database.execSQL(
+                """
+                CREATE INDEX IF NOT EXISTS index_installments_paymentId ON installments(paymentId)
+                """.trimIndent()
+            )
+        }
+    }
+    private val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS notification_settings (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    reminderLeadDays INTEGER NOT NULL DEFAULT 3,
+                    budgetAlertThreshold INTEGER NOT NULL DEFAULT 80,
+                    monthlyReminderDay INTEGER NOT NULL DEFAULT 1,
+                    enabled INTEGER NOT NULL DEFAULT 0
+                )
+                """.trimIndent()
+            )
         }
     }
 
@@ -95,7 +165,7 @@ object AppModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "payment_db")
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
 
     @Provides
@@ -113,4 +183,21 @@ object AppModule {
     @Provides
     @Singleton
     fun provideBudgetDao(db: AppDatabase): BudgetDao = db.budgetDao()
+
+    @Provides
+    @Singleton
+    fun provideSettingsDataStore(@ApplicationContext context: Context): SettingsDataStore =
+        SettingsDataStore(context)
+
+    @Provides
+    @Singleton
+    fun provideSubscriptionDao(db: AppDatabase): SubscriptionDao = db.subscriptionDao()
+
+    @Provides
+    @Singleton
+    fun provideInstallmentDao(db: AppDatabase): InstallmentDao = db.installmentDao()
+
+    @Provides
+    @Singleton
+    fun provideNotificationSettingDao(db: AppDatabase): NotificationSettingDao = db.notificationSettingDao()
 }
