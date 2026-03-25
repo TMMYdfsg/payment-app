@@ -16,6 +16,19 @@ val keystoreProperties = Properties().apply {
     }
 }
 
+fun resolveKeystoreFile(pathValue: String): java.io.File {
+    val normalized = pathValue.replace("\\", "/")
+    val rootCandidate = rootProject.file(normalized)
+    if (rootCandidate.exists()) return rootCandidate
+    val moduleCandidate = project.file(normalized)
+    if (moduleCandidate.exists()) return moduleCandidate
+    if (normalized.startsWith("app/")) {
+        val stripped = rootProject.file(normalized.removePrefix("app/"))
+        if (stripped.exists()) return stripped
+    }
+    return rootCandidate
+}
+
 android {
     namespace = "com.payment.app"
     compileSdk = 34
@@ -33,7 +46,8 @@ android {
     signingConfigs {
         create("release") {
             if (keystorePropertiesFile.exists()) {
-                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+                val storeFilePath = keystoreProperties.getProperty("storeFile")
+                storeFile = resolveKeystoreFile(storeFilePath)
                 storePassword = keystoreProperties["storePassword"] as String
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
