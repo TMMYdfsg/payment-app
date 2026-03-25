@@ -1,6 +1,6 @@
 package com.payment.app.ui.analytics
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,15 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,15 +30,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.payment.app.ui.components.MonthSwitcher
-import com.payment.app.ui.components.SummaryMetricCard
 import com.payment.app.ui.components.formatCurrency
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,14 +55,11 @@ fun AnalyticsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("分析") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
-                    }
-                }
+                title = { Text(uiState.monthLabel) },
+                navigationIcon = { Icon(Icons.Default.AutoGraph, contentDescription = null, modifier = Modifier.padding(start = 12.dp)) }
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
         if (uiState.isLoading) {
             Box(
@@ -79,16 +74,16 @@ fun AnalyticsScreen(
         }
 
         val totalThisMonth = uiState.monthlyTotals.lastOrNull()?.second ?: 0L
-        val cardTotal = uiState.cardBreakdown.sumOf { it.second }.coerceAtLeast(1L)
+        val budget = uiState.budgetAmount ?: 0L
+        val budgetRemaining = (budget - totalThisMonth).coerceAtLeast(0L)
         val categoryMax = uiState.categoryBreakdown.maxOfOrNull { it.second }?.coerceAtLeast(1L) ?: 1L
-        val budget = uiState.budgetAmount
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             item {
                 MonthSwitcher(
@@ -99,92 +94,59 @@ fun AnalyticsScreen(
             }
 
             item {
-                SummaryMetricCard(
-                    title = "当月合計",
-                    value = formatCurrency(totalThisMonth),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            item {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("過去12ヶ月推移", fontWeight = FontWeight.Bold)
-                        val max = uiState.monthlyTotals.maxOfOrNull { it.second }?.coerceAtLeast(1L) ?: 1L
-                        uiState.monthlyTotals.forEach { (ym, amount) ->
-                            val progress = (amount.toFloat() / max.toFloat()).coerceIn(0f, 1f)
-                            Text("$ym  ${formatCurrency(amount)}", style = MaterialTheme.typography.bodySmall)
-                            LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
-                        }
-                    }
-                }
-            }
-
-            item {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("カテゴリ別支出（棒グラフ）", fontWeight = FontWeight.Bold)
-                        if (uiState.categoryBreakdown.isEmpty()) {
-                            Text("データなし")
-                        } else {
-                            uiState.categoryBreakdown.forEach { (category, amount) ->
-                                val progress = (amount.toFloat() / categoryMax.toFloat()).coerceIn(0f, 1f)
-                                Text("$category  ${formatCurrency(amount)}", style = MaterialTheme.typography.bodySmall)
-                                LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
-                            }
-                        }
-                    }
-                }
-            }
-
-            item {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("カード別内訳（円グラフ）", fontWeight = FontWeight.Bold)
-                        if (uiState.cardBreakdown.isEmpty()) {
-                            Text("データなし")
-                        } else {
-                            val palette = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.tertiary,
-                                MaterialTheme.colorScheme.secondary,
-                                Color(0xFFE57373),
-                                Color(0xFF81C784),
-                                Color(0xFF64B5F6),
-                                Color(0xFFFFB74D)
-                            )
-                            Canvas(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(180.dp)
-                            ) {
-                                val diameter = size.minDimension * 0.75f
-                                val strokeWidth = diameter * 0.22f
-                                val topLeftX = (size.width - diameter) / 2f
-                                val topLeftY = (size.height - diameter) / 2f
-                                var startAngle = -90f
-                                uiState.cardBreakdown.forEachIndexed { index, (_, amount) ->
-                                    val sweep = (amount.toFloat() / cardTotal.toFloat()) * 360f
-                                    drawArc(
-                                        color = palette[index % palette.size],
-                                        startAngle = startAngle,
-                                        sweepAngle = sweep,
-                                        useCenter = false,
-                                        topLeft = Offset(topLeftX, topLeftY),
-                                        size = Size(diameter, diameter),
-                                        style = Stroke(width = strokeWidth)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.primary,
+                                        MaterialTheme.colorScheme.primaryContainer
                                     )
-                                    startAngle += sweep
-                                }
-                            }
-                            uiState.cardBreakdown.forEachIndexed { index, (card, amount) ->
-                                val percent = ((amount * 100) / cardTotal).toInt()
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                )
+                            )
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            "支出総額",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                        )
+                        Text(
+                            formatCurrency(totalThisMonth),
+                            style = MaterialTheme.typography.displayMedium,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        val max = uiState.monthlyTotals.maxOfOrNull { it.second }?.coerceAtLeast(1L) ?: 1L
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            uiState.monthlyTotals.takeLast(8).forEach { (_, amount) ->
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(58.dp),
+                                    contentAlignment = Alignment.BottomCenter
                                 ) {
-                                    Text("${index + 1}. $card", color = palette[index % palette.size])
-                                    Text("${formatCurrency(amount)} ($percent%)")
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth(0.65f)
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .height((56f * (amount.toFloat() / max.toFloat()).coerceIn(0.06f, 1f)).dp)
+                                            .background(
+                                                if (amount == totalThisMonth) {
+                                                    MaterialTheme.colorScheme.onPrimary
+                                                } else {
+                                                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.25f)
+                                                }
+                                            )
+                                    )
                                 }
                             }
                         }
@@ -193,21 +155,78 @@ fun AnalyticsScreen(
             }
 
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("予算消化率ゲージ", fontWeight = FontWeight.Bold)
-                        if (budget == null || budget <= 0L) {
-                            Text("予算未設定")
-                        } else {
-                            Text("${uiState.budgetUsagePercent}% / ${formatCurrency(budget)}")
+                Text("カテゴリ別内訳", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            }
+
+            if (uiState.categoryBreakdown.isEmpty()) {
+                item { Text("データなし", color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            } else {
+                items(uiState.categoryBreakdown) { (category, amount) ->
+                    Card(shape = RoundedCornerShape(18.dp)) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(category, fontWeight = FontWeight.SemiBold)
+                                Text(formatCurrency(amount), fontWeight = FontWeight.Bold)
+                            }
                             LinearProgressIndicator(
-                                progress = { (uiState.budgetUsagePercent / 100f).coerceAtMost(1f) },
-                                modifier = Modifier.fillMaxWidth()
+                                progress = { (amount.toFloat() / categoryMax.toFloat()).coerceIn(0f, 1f) },
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MaterialTheme.colorScheme.primary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                         }
+                    }
+                }
+            }
+
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.primary)
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            "今月の予算状況",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                        )
+                        Text(
+                            "${uiState.budgetUsagePercent}%",
+                            style = MaterialTheme.typography.displayMedium,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            "${formatCurrency(totalThisMonth)} / ${formatCurrency(budget)}",
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                        )
+                        Text(
+                            "残予算 ${formatCurrency(budgetRemaining)}",
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                        )
+                        LinearProgressIndicator(
+                            progress = { (uiState.budgetUsagePercent / 100f).coerceIn(0f, 1f) },
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color(0xFF9EF3D6),
+                            trackColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
+                        )
                     }
                 }
             }
         }
     }
 }
+

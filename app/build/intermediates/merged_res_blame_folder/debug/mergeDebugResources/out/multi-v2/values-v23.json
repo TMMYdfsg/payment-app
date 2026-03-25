@@ -1,29 +1,20 @@
 {
     "logs": [
         {
-            "outputFile": "com.payment.app-mergeDebugResources-73:/values-v23/values-v23.xml",
+            "outputFile": "com.payment.app-mergeDebugResources-75:/values-v23/values-v23.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\e310f1a82a2e85acc0434c243c324638\\transformed\\appcompat-1.6.1\\res\\values-v23\\values-v23.xml",
+                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\5ba3afe777c77ce5f033cf6679e0c5ab\\transformed\\work-runtime-2.9.1\\res\\values-v23\\values-v23.xml",
                     "from": {
-                        "startLines": "2,3,4,5,6,20,34,35,36,39,43,44,45,46",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,190,325,400,487,1225,1975,2094,2221,2443,2667,2782,2889,3002",
-                        "endLines": "2,3,4,5,19,33,34,35,38,42,43,44,45,49",
-                        "endColumns": "134,134,74,86,12,12,118,126,12,12,114,106,112,12",
-                        "endOffsets": "185,320,395,482,1220,1970,2089,2216,2438,2662,2777,2884,2997,3227"
-                    },
-                    "to": {
-                        "startLines": "5,6,7,8,9,23,37,38,39,42,46,47,48,49",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "240,375,510,585,672,1410,2160,2279,2406,2628,2852,2967,3074,3187",
-                        "endLines": "5,6,7,8,22,36,37,38,41,45,46,47,48,52",
-                        "endColumns": "134,134,74,86,12,12,118,126,12,12,114,106,112,12",
-                        "endOffsets": "370,505,580,667,1405,2155,2274,2401,2623,2847,2962,3069,3182,3412"
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,121",
+                        "endColumns": "65,62",
+                        "endOffsets": "116,179"
                     }
                 },
                 {
-                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\c1547bf4d38444eff583cde42acc8a64\\transformed\\glance-appwidget-1.1.1\\res\\values-v23\\values-v23.xml",
+                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\fff74eb99b0c7f2716c23b208b9784e3\\transformed\\glance-appwidget-1.1.1\\res\\values-v23\\values-v23.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -40,13 +31,22 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\900ab37722188a8112b2fdf409f0e2f9\\transformed\\work-runtime-2.9.1\\res\\values-v23\\values-v23.xml",
+                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\e6c2ca94da0bb7eb4dcf76e1c3bad5d6\\transformed\\appcompat-1.6.1\\res\\values-v23\\values-v23.xml",
                     "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,121",
-                        "endColumns": "65,62",
-                        "endOffsets": "116,179"
+                        "startLines": "2,3,4,5,6,20,34,35,36,39,43,44,45,46",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,190,325,400,487,1225,1975,2094,2221,2443,2667,2782,2889,3002",
+                        "endLines": "2,3,4,5,19,33,34,35,38,42,43,44,45,49",
+                        "endColumns": "134,134,74,86,12,12,118,126,12,12,114,106,112,12",
+                        "endOffsets": "185,320,395,482,1220,1970,2089,2216,2438,2662,2777,2884,2997,3227"
+                    },
+                    "to": {
+                        "startLines": "5,6,7,8,9,23,37,38,39,42,46,47,48,49",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "240,375,510,585,672,1410,2160,2279,2406,2628,2852,2967,3074,3187",
+                        "endLines": "5,6,7,8,22,36,37,38,41,45,46,47,48,52",
+                        "endColumns": "134,134,74,86,12,12,118,126,12,12,114,106,112,12",
+                        "endOffsets": "370,505,580,667,1405,2155,2274,2401,2623,2847,2962,3069,3182,3412"
                     }
                 }
             ]

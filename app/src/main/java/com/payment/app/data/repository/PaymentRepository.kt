@@ -176,8 +176,12 @@ class PaymentRepository @Inject constructor(
 
     suspend fun upsertSubscription(entity: SubscriptionEntity) = subscriptionDao.upsert(entity)
     suspend fun upsertInstallment(entity: InstallmentEntity) = installmentDao.upsert(entity)
-    suspend fun upsertNotificationSetting(setting: NotificationSettingEntity) =
-        notificationSettingDao.upsert(setting)
+    suspend fun upsertNotificationSetting(setting: NotificationSettingEntity) {
+        val targetId = setting.id.takeIf { it > 0L } ?: 1L
+        val savedId = notificationSettingDao.upsert(setting.copy(id = targetId))
+        val keepId = if (savedId > 0L) savedId else targetId
+        notificationSettingDao.deleteOthers(keepId)
+    }
 
     suspend fun ensurePaymentRecord(cardId: Long, yearMonth: String): Long {
         val existing = paymentDao.getPaymentByCardIdAndMonth(cardId, yearMonth)

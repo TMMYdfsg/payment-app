@@ -8,6 +8,7 @@ import androidx.room.CoroutinesRoom;
 import androidx.room.EntityInsertionAdapter;
 import androidx.room.RoomDatabase;
 import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
 import androidx.room.util.CursorUtil;
 import androidx.room.util.DBUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.annotation.processing.Generated;
+import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
 
@@ -32,6 +34,8 @@ public final class NotificationSettingDao_Impl implements NotificationSettingDao
   private final RoomDatabase __db;
 
   private final EntityInsertionAdapter<NotificationSettingEntity> __insertionAdapterOfNotificationSettingEntity;
+
+  private final SharedSQLiteStatement __preparedStmtOfDeleteOthers;
 
   public NotificationSettingDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -51,6 +55,14 @@ public final class NotificationSettingDao_Impl implements NotificationSettingDao
         statement.bindLong(4, entity.getMonthlyReminderDay());
         final int _tmp = entity.getEnabled() ? 1 : 0;
         statement.bindLong(5, _tmp);
+      }
+    };
+    this.__preparedStmtOfDeleteOthers = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM notification_settings WHERE id != ?";
+        return _query;
       }
     };
   }
@@ -75,8 +87,33 @@ public final class NotificationSettingDao_Impl implements NotificationSettingDao
   }
 
   @Override
+  public Object deleteOthers(final long keepId, final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteOthers.acquire();
+        int _argIndex = 1;
+        _stmt.bindLong(_argIndex, keepId);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfDeleteOthers.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<NotificationSettingEntity> getSettings() {
-    final String _sql = "SELECT * FROM notification_settings LIMIT 1";
+    final String _sql = "SELECT * FROM notification_settings ORDER BY id DESC LIMIT 1";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"notification_settings"}, new Callable<NotificationSettingEntity>() {
       @Override
@@ -122,7 +159,7 @@ public final class NotificationSettingDao_Impl implements NotificationSettingDao
 
   @Override
   public Object getSettingsOnce(final Continuation<? super NotificationSettingEntity> $completion) {
-    final String _sql = "SELECT * FROM notification_settings LIMIT 1";
+    final String _sql = "SELECT * FROM notification_settings ORDER BY id DESC LIMIT 1";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
     return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<NotificationSettingEntity>() {

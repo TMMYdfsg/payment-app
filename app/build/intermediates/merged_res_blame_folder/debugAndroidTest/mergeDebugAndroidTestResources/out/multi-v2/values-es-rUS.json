@@ -4,7 +4,7 @@
             "outputFile": "com.payment.app.test.app-mergeDebugAndroidTestResources-34:/values-es-rUS/values-es-rUS.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\ccac4269d045329a9fc0978068f06745\\transformed\\core-1.13.1\\res\\values-es-rUS\\values-es-rUS.xml",
+                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\add3bf3a95e698fe7deef6c226a38a12\\transformed\\core-1.13.1\\res\\values-es-rUS\\values-es-rUS.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\0a26704b70c9f12a489617353442ff07\\transformed\\ui-release\\res\\values-es-rUS\\values-es-rUS.xml",
+                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\8a4a18bf02c3a224d4388d3aadd37f11\\transformed\\ui-release\\res\\values-es-rUS\\values-es-rUS.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",

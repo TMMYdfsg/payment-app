@@ -61,7 +61,8 @@ class NotificationSettingsViewModel @Inject constructor(
         settings: NotificationSettingEntity,
         themeMode: String,
         themeAccent: String,
-        lockEnabled: Boolean
+        lockEnabled: Boolean,
+        onSaved: (() -> Unit)? = null
     ) {
         viewModelScope.launch {
             upsertNotificationSettingUseCase(settings)
@@ -70,6 +71,7 @@ class NotificationSettingsViewModel @Inject constructor(
             setLockEnabledUseCase(lockEnabled)
             reminderScheduler.scheduleDailyChecks()
             reminderScheduler.scheduleMonthlyReminder(settings.monthlyReminderDay)
+            onSaved?.invoke()
         }
     }
 }

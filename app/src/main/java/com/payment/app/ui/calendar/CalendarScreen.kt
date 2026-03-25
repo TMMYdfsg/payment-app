@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,7 +28,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,18 +52,7 @@ fun CalendarScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("カレンダー") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "戻る")
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+    Scaffold(containerColor = MaterialTheme.colorScheme.surface) { paddingValues ->
         if (uiState.isLoading) {
             Box(
                 modifier = Modifier
@@ -74,13 +65,35 @@ fun CalendarScreen(
             return@Scaffold
         }
 
+        val selectedTotal = uiState.selectedDateItems.sumOf { it.amount }
+        val hasShift = uiState.selectedDateItems.any { it.requestedDate != it.scheduledDate }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                        }
+                        Column {
+                            Text("カレンダー", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+                            Text(uiState.monthLabel, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                    Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                }
+            }
+
             item {
                 MonthSwitcher(
                     label = uiState.monthLabel,
@@ -90,72 +103,84 @@ fun CalendarScreen(
             }
 
             item {
-                Row(
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
                 ) {
-                    DayOfWeek.values().forEach { dow ->
-                        Text(
-                            dow.getDisplayName(TextStyle.SHORT, Locale.JAPAN),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
-
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    uiState.daysInGrid.chunked(7).forEach { week ->
+                    Column(
+                        modifier = Modifier.padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            week.forEach { date ->
-                                if (date == null) {
-                                    Box(modifier = Modifier.weight(1f).height(58.dp))
-                                } else {
-                                    val items = uiState.paymentsByDate[date].orEmpty()
-                                    val selected = date == uiState.selectedDate
-                                    Card(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .height(58.dp)
-                                            .clickable { viewModel.selectDate(date) },
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = if (selected) {
-                                                MaterialTheme.colorScheme.primaryContainer
-                                            } else {
-                                                MaterialTheme.colorScheme.surfaceVariant
-                                            }
-                                        )
-                                    ) {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(6.dp),
-                                            verticalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text("${date.dayOfMonth}", style = MaterialTheme.typography.bodySmall)
-                                            if (items.isNotEmpty()) {
-                                                Row(
-                                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                                    verticalAlignment = Alignment.CenterVertically
+                            DayOfWeek.values().forEach { dow ->
+                                Text(
+                                    dow.getDisplayName(TextStyle.SHORT, Locale.JAPAN),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            uiState.daysInGrid.chunked(7).forEach { week ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    week.forEach { date ->
+                                        if (date == null) {
+                                            Box(modifier = Modifier.weight(1f).height(58.dp))
+                                        } else {
+                                            val items = uiState.paymentsByDate[date].orEmpty()
+                                            val selected = date == uiState.selectedDate
+                                            Card(
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .height(58.dp)
+                                                    .clickable { viewModel.selectDate(date) },
+                                                shape = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
+                                                colors = CardDefaults.cardColors(
+                                                    containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer
+                                                    else MaterialTheme.colorScheme.surfaceContainerLowest
+                                                )
+                                            ) {
+                                                Column(
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .padding(6.dp),
+                                                    verticalArrangement = Arrangement.SpaceBetween
                                                 ) {
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .clip(MaterialTheme.shapes.small)
-                                                            .background(MaterialTheme.colorScheme.primary)
-                                                            .padding(horizontal = 6.dp, vertical = 1.dp)
-                                                    ) {
-                                                        Text(
-                                                            "${items.size}",
-                                                            color = MaterialTheme.colorScheme.onPrimary,
-                                                            style = MaterialTheme.typography.labelSmall
-                                                        )
-                                                    }
-                                                    if (items.any { it.requestedDate != it.scheduledDate }) {
-                                                        Text("->", style = MaterialTheme.typography.labelSmall)
+                                                    Text("${date.dayOfMonth}", style = MaterialTheme.typography.bodySmall)
+                                                    if (items.isNotEmpty()) {
+                                                        Row(
+                                                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Box(
+                                                                modifier = Modifier
+                                                                    .clip(MaterialTheme.shapes.small)
+                                                                    .background(MaterialTheme.colorScheme.primary)
+                                                                    .padding(horizontal = 6.dp, vertical = 1.dp)
+                                                            ) {
+                                                                Text(
+                                                                    "${items.size}",
+                                                                    color = MaterialTheme.colorScheme.onPrimary,
+                                                                    style = MaterialTheme.typography.labelSmall
+                                                                )
+                                                            }
+                                                            if (items.any { it.requestedDate != it.scheduledDate }) {
+                                                                Icon(
+                                                                    Icons.Default.KeyboardArrowRight,
+                                                                    contentDescription = null,
+                                                                    modifier = Modifier.size(14.dp),
+                                                                    tint = MaterialTheme.colorScheme.error
+                                                                )
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -169,20 +194,62 @@ fun CalendarScreen(
             }
 
             item {
-                Text(
-                    "選択日: ${uiState.selectedDate.asDisplayLabel()}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Column {
+                        Text("予定", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                        Text(
+                            "${uiState.selectedDate.asDisplayLabel()} の予定",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text("支払合計", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            formatCurrency(selectedTotal),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+
+            if (hasShift) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f))
+                    ) {
+                        Text(
+                            "銀行休業日により引落日がシフトしています。",
+                            modifier = Modifier.padding(12.dp),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
             }
 
             if (uiState.selectedDateItems.isEmpty()) {
                 item {
-                    Text("この日の引落予定はありません。")
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+                    ) {
+                        Text("この日の引落予定はありません。", modifier = Modifier.padding(14.dp))
+                    }
                 }
             } else {
                 items(uiState.selectedDateItems) { item ->
-                    Card(modifier = Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)
+                    ) {
                         Column(
                             modifier = Modifier.padding(14.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -192,11 +259,21 @@ fun CalendarScreen(
                             if (item.requestedDate != item.scheduledDate) {
                                 Text(
                                     "シフト: ${item.requestedDate.asDisplayLabel()} -> ${item.scheduledDate.asDisplayLabel()}",
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.bodySmall
                                 )
                             }
                         }
                     }
+                }
+            }
+
+            item {
+                Button(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("ホームへ戻る")
                 }
             }
         }

@@ -110,6 +110,10 @@
             android:exported="true"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <activity
+            android:name="androidx.compose.ui.tooling.PreviewActivity"
+            android:exported="true" />
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="com.payment.app.androidx-startup"
@@ -220,17 +224,13 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name="androidx.core.widget.RemoteViewsCompatService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
-
         <activity
             android:name="androidx.activity.ComponentActivity"
             android:exported="true" />
-        <activity
-            android:name="androidx.compose.ui.tooling.PreviewActivity"
-            android:exported="true" />
 
+        <service
+            android:name="androidx.core.widget.RemoteViewsCompatService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
             android:name="androidx.room.MultiInstanceInvalidationService"
             android:directBootAware="true"

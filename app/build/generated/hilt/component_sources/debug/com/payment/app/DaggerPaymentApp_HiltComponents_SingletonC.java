@@ -459,46 +459,31 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_payment_app_ui_analytics_AnalyticsViewModel = "com.payment.app.ui.analytics.AnalyticsViewModel";
-
-      static String com_payment_app_ui_account_AccountManageViewModel = "com.payment.app.ui.account.AccountManageViewModel";
-
-      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
-
-      static String com_payment_app_ui_notification_NotificationSettingsViewModel = "com.payment.app.ui.notification.NotificationSettingsViewModel";
-
-      static String com_payment_app_ui_home_HomeViewModel = "com.payment.app.ui.home.HomeViewModel";
-
       static String com_payment_app_ui_subscription_SubscriptionViewModel = "com.payment.app.ui.subscription.SubscriptionViewModel";
 
-      static String com_payment_app_ui_calendar_CalendarViewModel = "com.payment.app.ui.calendar.CalendarViewModel";
+      static String com_payment_app_ui_notification_NotificationSettingsViewModel = "com.payment.app.ui.notification.NotificationSettingsViewModel";
 
       static String com_payment_app_ui_card_CardManageViewModel = "com.payment.app.ui.card.CardManageViewModel";
 
       static String com_payment_app_ui_analytics_YearlySummaryViewModel = "com.payment.app.ui.analytics.YearlySummaryViewModel";
 
+      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
+
+      static String com_payment_app_ui_account_AccountManageViewModel = "com.payment.app.ui.account.AccountManageViewModel";
+
+      static String com_payment_app_ui_home_HomeViewModel = "com.payment.app.ui.home.HomeViewModel";
+
+      static String com_payment_app_ui_analytics_AnalyticsViewModel = "com.payment.app.ui.analytics.AnalyticsViewModel";
+
       static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
 
-      @KeepFieldType
-      AnalyticsViewModel com_payment_app_ui_analytics_AnalyticsViewModel2;
-
-      @KeepFieldType
-      AccountManageViewModel com_payment_app_ui_account_AccountManageViewModel2;
-
-      @KeepFieldType
-      ListViewModel com_payment_app_ui_list_ListViewModel2;
-
-      @KeepFieldType
-      NotificationSettingsViewModel com_payment_app_ui_notification_NotificationSettingsViewModel2;
-
-      @KeepFieldType
-      HomeViewModel com_payment_app_ui_home_HomeViewModel2;
+      static String com_payment_app_ui_calendar_CalendarViewModel = "com.payment.app.ui.calendar.CalendarViewModel";
 
       @KeepFieldType
       SubscriptionViewModel com_payment_app_ui_subscription_SubscriptionViewModel2;
 
       @KeepFieldType
-      CalendarViewModel com_payment_app_ui_calendar_CalendarViewModel2;
+      NotificationSettingsViewModel com_payment_app_ui_notification_NotificationSettingsViewModel2;
 
       @KeepFieldType
       CardManageViewModel com_payment_app_ui_card_CardManageViewModel2;
@@ -507,7 +492,22 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       YearlySummaryViewModel com_payment_app_ui_analytics_YearlySummaryViewModel2;
 
       @KeepFieldType
+      ListViewModel com_payment_app_ui_list_ListViewModel2;
+
+      @KeepFieldType
+      AccountManageViewModel com_payment_app_ui_account_AccountManageViewModel2;
+
+      @KeepFieldType
+      HomeViewModel com_payment_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      AnalyticsViewModel com_payment_app_ui_analytics_AnalyticsViewModel2;
+
+      @KeepFieldType
       InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
+
+      @KeepFieldType
+      CalendarViewModel com_payment_app_ui_calendar_CalendarViewModel2;
     }
   }
 
@@ -671,55 +671,55 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_payment_app_ui_calendar_CalendarViewModel = "com.payment.app.ui.calendar.CalendarViewModel";
-
-      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
-
-      static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
+      static String com_payment_app_ui_account_AccountManageViewModel = "com.payment.app.ui.account.AccountManageViewModel";
 
       static String com_payment_app_ui_notification_NotificationSettingsViewModel = "com.payment.app.ui.notification.NotificationSettingsViewModel";
 
-      static String com_payment_app_ui_subscription_SubscriptionViewModel = "com.payment.app.ui.subscription.SubscriptionViewModel";
-
-      static String com_payment_app_ui_analytics_YearlySummaryViewModel = "com.payment.app.ui.analytics.YearlySummaryViewModel";
-
-      static String com_payment_app_ui_card_CardManageViewModel = "com.payment.app.ui.card.CardManageViewModel";
-
-      static String com_payment_app_ui_account_AccountManageViewModel = "com.payment.app.ui.account.AccountManageViewModel";
+      static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
 
       static String com_payment_app_ui_analytics_AnalyticsViewModel = "com.payment.app.ui.analytics.AnalyticsViewModel";
 
+      static String com_payment_app_ui_card_CardManageViewModel = "com.payment.app.ui.card.CardManageViewModel";
+
       static String com_payment_app_ui_home_HomeViewModel = "com.payment.app.ui.home.HomeViewModel";
 
-      @KeepFieldType
-      CalendarViewModel com_payment_app_ui_calendar_CalendarViewModel2;
+      static String com_payment_app_ui_analytics_YearlySummaryViewModel = "com.payment.app.ui.analytics.YearlySummaryViewModel";
 
-      @KeepFieldType
-      ListViewModel com_payment_app_ui_list_ListViewModel2;
+      static String com_payment_app_ui_calendar_CalendarViewModel = "com.payment.app.ui.calendar.CalendarViewModel";
 
-      @KeepFieldType
-      InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
+      static String com_payment_app_ui_subscription_SubscriptionViewModel = "com.payment.app.ui.subscription.SubscriptionViewModel";
 
-      @KeepFieldType
-      NotificationSettingsViewModel com_payment_app_ui_notification_NotificationSettingsViewModel2;
-
-      @KeepFieldType
-      SubscriptionViewModel com_payment_app_ui_subscription_SubscriptionViewModel2;
-
-      @KeepFieldType
-      YearlySummaryViewModel com_payment_app_ui_analytics_YearlySummaryViewModel2;
-
-      @KeepFieldType
-      CardManageViewModel com_payment_app_ui_card_CardManageViewModel2;
+      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
 
       @KeepFieldType
       AccountManageViewModel com_payment_app_ui_account_AccountManageViewModel2;
 
       @KeepFieldType
+      NotificationSettingsViewModel com_payment_app_ui_notification_NotificationSettingsViewModel2;
+
+      @KeepFieldType
+      InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
+
+      @KeepFieldType
       AnalyticsViewModel com_payment_app_ui_analytics_AnalyticsViewModel2;
 
       @KeepFieldType
+      CardManageViewModel com_payment_app_ui_card_CardManageViewModel2;
+
+      @KeepFieldType
       HomeViewModel com_payment_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      YearlySummaryViewModel com_payment_app_ui_analytics_YearlySummaryViewModel2;
+
+      @KeepFieldType
+      CalendarViewModel com_payment_app_ui_calendar_CalendarViewModel2;
+
+      @KeepFieldType
+      SubscriptionViewModel com_payment_app_ui_subscription_SubscriptionViewModel2;
+
+      @KeepFieldType
+      ListViewModel com_payment_app_ui_list_ListViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
