@@ -2,14 +2,17 @@ package com.payment.app.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.net.Uri
 import com.payment.app.data.db.entity.BudgetEntity
 import com.payment.app.data.model.CardWithPayment
 import com.payment.app.domain.usecase.ExportPaymentsUseCase
+import com.payment.app.domain.usecase.ExportBackupJsonUseCase
 import com.payment.app.domain.usecase.GetBudgetUseCase
 import com.payment.app.domain.usecase.GetMonthlyPaymentsOnceUseCase
 import com.payment.app.domain.usecase.GetMonthlyPaymentsUseCase
 import com.payment.app.domain.usecase.MarkAllPaidUseCase
 import com.payment.app.domain.usecase.ResetMonthAmountsUseCase
+import com.payment.app.domain.usecase.UploadBackupToDriveUseCase
 import com.payment.app.domain.usecase.UpdateBudgetUseCase
 import com.payment.app.notifications.ReminderScheduler
 import com.payment.app.data.repository.PaymentRepository
@@ -29,6 +32,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
+import java.io.File
 import javax.inject.Inject
 
 data class ScheduleGroup(
@@ -64,6 +68,8 @@ class HomeViewModel @Inject constructor(
     private val markAllPaidUseCase: MarkAllPaidUseCase,
     private val updateBudgetUseCase: UpdateBudgetUseCase,
     private val exportPaymentsUseCase: ExportPaymentsUseCase,
+    private val exportBackupJsonUseCase: ExportBackupJsonUseCase,
+    private val uploadBackupToDriveUseCase: UploadBackupToDriveUseCase,
     private val getMonthlyPaymentsOnceUseCase: GetMonthlyPaymentsOnceUseCase,
     private val resetMonthAmountsUseCase: ResetMonthAmountsUseCase,
     private val repository: PaymentRepository,
@@ -108,8 +114,30 @@ class HomeViewModel @Inject constructor(
     suspend fun getCurrentPayments(): List<CardWithPayment> =
         getMonthlyPaymentsOnceUseCase(selectedMonth.value.asStorageKey())
 
-    suspend fun exportCurrentMonth(): String? =
+    suspend fun exportCurrentMonth(): File? =
         exportPaymentsUseCase(selectedMonth.value.asStorageKey())
+
+    suspend fun buildBackupJson(): String =
+        exportBackupJsonUseCase.buildJson()
+
+    suspend fun saveBackupJson(uri: Uri, json: String): Boolean =
+        exportBackupJsonUseCase.saveToDocument(uri, json)
+
+    suspend fun uploadBackupToDrive(
+        accessToken: String,
+        folderId: String?,
+        fileName: String,
+        json: String
+    ): Result<String> {
+        return uploadBackupToDriveUseCase(
+            UploadBackupToDriveUseCase.Request(
+                accessToken = accessToken,
+                folderId = folderId,
+                fileName = fileName,
+                jsonBody = json
+            )
+        )
+    }
 
     fun rescheduleNotifications() {
         viewModelScope.launch {

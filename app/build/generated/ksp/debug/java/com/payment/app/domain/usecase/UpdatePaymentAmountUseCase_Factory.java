@@ -1,6 +1,7 @@
 package com.payment.app.domain.usecase;
 
 import com.payment.app.data.repository.PaymentRepository;
+import com.payment.app.widget.WidgetUpdater;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
@@ -26,21 +27,27 @@ import javax.inject.Provider;
 public final class UpdatePaymentAmountUseCase_Factory implements Factory<UpdatePaymentAmountUseCase> {
   private final Provider<PaymentRepository> repositoryProvider;
 
-  public UpdatePaymentAmountUseCase_Factory(Provider<PaymentRepository> repositoryProvider) {
+  private final Provider<WidgetUpdater> widgetUpdaterProvider;
+
+  public UpdatePaymentAmountUseCase_Factory(Provider<PaymentRepository> repositoryProvider,
+      Provider<WidgetUpdater> widgetUpdaterProvider) {
     this.repositoryProvider = repositoryProvider;
+    this.widgetUpdaterProvider = widgetUpdaterProvider;
   }
 
   @Override
   public UpdatePaymentAmountUseCase get() {
-    return newInstance(repositoryProvider.get());
+    return newInstance(repositoryProvider.get(), widgetUpdaterProvider.get());
   }
 
   public static UpdatePaymentAmountUseCase_Factory create(
-      Provider<PaymentRepository> repositoryProvider) {
-    return new UpdatePaymentAmountUseCase_Factory(repositoryProvider);
+      Provider<PaymentRepository> repositoryProvider,
+      Provider<WidgetUpdater> widgetUpdaterProvider) {
+    return new UpdatePaymentAmountUseCase_Factory(repositoryProvider, widgetUpdaterProvider);
   }
 
-  public static UpdatePaymentAmountUseCase newInstance(PaymentRepository repository) {
-    return new UpdatePaymentAmountUseCase(repository);
+  public static UpdatePaymentAmountUseCase newInstance(PaymentRepository repository,
+      WidgetUpdater widgetUpdater) {
+    return new UpdatePaymentAmountUseCase(repository, widgetUpdater);
   }
 }

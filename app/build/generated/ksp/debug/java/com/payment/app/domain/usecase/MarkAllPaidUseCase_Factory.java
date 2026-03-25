@@ -1,6 +1,7 @@
 package com.payment.app.domain.usecase;
 
 import com.payment.app.data.repository.PaymentRepository;
+import com.payment.app.widget.WidgetUpdater;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
@@ -26,20 +27,26 @@ import javax.inject.Provider;
 public final class MarkAllPaidUseCase_Factory implements Factory<MarkAllPaidUseCase> {
   private final Provider<PaymentRepository> repositoryProvider;
 
-  public MarkAllPaidUseCase_Factory(Provider<PaymentRepository> repositoryProvider) {
+  private final Provider<WidgetUpdater> widgetUpdaterProvider;
+
+  public MarkAllPaidUseCase_Factory(Provider<PaymentRepository> repositoryProvider,
+      Provider<WidgetUpdater> widgetUpdaterProvider) {
     this.repositoryProvider = repositoryProvider;
+    this.widgetUpdaterProvider = widgetUpdaterProvider;
   }
 
   @Override
   public MarkAllPaidUseCase get() {
-    return newInstance(repositoryProvider.get());
+    return newInstance(repositoryProvider.get(), widgetUpdaterProvider.get());
   }
 
-  public static MarkAllPaidUseCase_Factory create(Provider<PaymentRepository> repositoryProvider) {
-    return new MarkAllPaidUseCase_Factory(repositoryProvider);
+  public static MarkAllPaidUseCase_Factory create(Provider<PaymentRepository> repositoryProvider,
+      Provider<WidgetUpdater> widgetUpdaterProvider) {
+    return new MarkAllPaidUseCase_Factory(repositoryProvider, widgetUpdaterProvider);
   }
 
-  public static MarkAllPaidUseCase newInstance(PaymentRepository repository) {
-    return new MarkAllPaidUseCase(repository);
+  public static MarkAllPaidUseCase newInstance(PaymentRepository repository,
+      WidgetUpdater widgetUpdater) {
+    return new MarkAllPaidUseCase(repository, widgetUpdater);
   }
 }

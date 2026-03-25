@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<testsuite name="com.payment.app.ExampleInstrumentedTest" tests="2" failures="0" errors="0" skipped="0" time="4.832" timestamp="2026-03-25T00:44:39" hostname="localhost">
+<testsuite name="com.payment.app.ExampleInstrumentedTest" tests="2" failures="0" errors="0" skipped="0" time="5.061" timestamp="2026-03-25T01:20:05" hostname="localhost">
   <properties>
     <property name="device" value="SCG20 - 16" />
     <property name="flavor" value="" />
     <property name="project" value=":app" />
   </properties>
-  <testcase name="useAppContext" classname="com.payment.app.ExampleInstrumentedTest" time="0.024" />
-  <testcase name="appStarts" classname="com.payment.app.SmokeTest" time="3.76" />
+  <testcase name="useAppContext" classname="com.payment.app.ExampleInstrumentedTest" time="0.013" />
+  <testcase name="appStarts" classname="com.payment.app.SmokeTest" time="3.929" />
 </testsuite>

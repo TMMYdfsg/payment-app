@@ -28,6 +28,18 @@ class SetThemeModeUseCase @Inject constructor(
     suspend operator fun invoke(mode: String) = settings.setThemeMode(mode)
 }
 
+class GetThemeAccentUseCase @Inject constructor(
+    private val settings: SettingsDataStore
+) {
+    operator fun invoke(): Flow<String> = settings.themeAccent
+}
+
+class SetThemeAccentUseCase @Inject constructor(
+    private val settings: SettingsDataStore
+) {
+    suspend operator fun invoke(accent: String) = settings.setThemeAccent(accent)
+}
+
 class GetReminderLeadDaysUseCase @Inject constructor(
     private val settings: SettingsDataStore
 ) {

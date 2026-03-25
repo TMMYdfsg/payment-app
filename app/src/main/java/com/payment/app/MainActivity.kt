@@ -13,6 +13,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.payment.app.navigation.NavGraph
 import com.payment.app.security.AuthManager
 import com.payment.app.ui.theme.PaymentAppTheme
@@ -48,7 +50,9 @@ class MainActivity : ComponentActivity() {
         })
 
         setContent {
-            PaymentAppTheme {
+            val themeMode by settingsDataStore.themeMode.collectAsState(initial = "system")
+            val themeAccent by settingsDataStore.themeAccent.collectAsState(initial = "ocean")
+            PaymentAppTheme(themeMode = themeMode, accent = themeAccent) {
                 NavGraph()
             }
         }

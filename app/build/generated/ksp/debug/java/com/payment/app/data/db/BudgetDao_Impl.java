@@ -1,6 +1,7 @@
 package com.payment.app.data.db;
 
 import android.database.Cursor;
+import android.os.CancellationSignal;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.CoroutinesRoom;
@@ -180,6 +181,48 @@ public final class BudgetDao_Impl implements BudgetDao {
         _statement.release();
       }
     });
+  }
+
+  @Override
+  public Object getAllBudgetsOnce(final Continuation<? super List<BudgetEntity>> $completion) {
+    final String _sql = "SELECT * FROM budgets";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<BudgetEntity>>() {
+      @Override
+      @NonNull
+      public List<BudgetEntity> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfBudgetId = CursorUtil.getColumnIndexOrThrow(_cursor, "budgetId");
+          final int _cursorIndexOfYearMonth = CursorUtil.getColumnIndexOrThrow(_cursor, "yearMonth");
+          final int _cursorIndexOfCategory = CursorUtil.getColumnIndexOrThrow(_cursor, "category");
+          final int _cursorIndexOfAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "amount");
+          final List<BudgetEntity> _result = new ArrayList<BudgetEntity>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final BudgetEntity _item;
+            final long _tmpBudgetId;
+            _tmpBudgetId = _cursor.getLong(_cursorIndexOfBudgetId);
+            final String _tmpYearMonth;
+            _tmpYearMonth = _cursor.getString(_cursorIndexOfYearMonth);
+            final String _tmpCategory;
+            if (_cursor.isNull(_cursorIndexOfCategory)) {
+              _tmpCategory = null;
+            } else {
+              _tmpCategory = _cursor.getString(_cursorIndexOfCategory);
+            }
+            final long _tmpAmount;
+            _tmpAmount = _cursor.getLong(_cursorIndexOfAmount);
+            _item = new BudgetEntity(_tmpBudgetId,_tmpYearMonth,_tmpCategory,_tmpAmount);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
   }
 
   @NonNull

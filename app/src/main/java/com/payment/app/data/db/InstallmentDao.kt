@@ -12,6 +12,9 @@ interface InstallmentDao {
     @Query("SELECT * FROM installments")
     fun getAllInstallments(): Flow<List<InstallmentEntity>>
 
+    @Query("SELECT * FROM installments")
+    suspend fun getAllInstallmentsOnce(): List<InstallmentEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: InstallmentEntity): Long
 }

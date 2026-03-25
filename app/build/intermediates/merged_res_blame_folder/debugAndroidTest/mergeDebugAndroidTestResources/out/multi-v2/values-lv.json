@@ -4,7 +4,7 @@
             "outputFile": "com.payment.app.test.app-mergeDebugAndroidTestResources-34:/values-lv/values-lv.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\52399f6fdf05c0b4b21f1237f85f019e\\transformed\\ui-release\\res\\values-lv\\values-lv.xml",
+                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\0a26704b70c9f12a489617353442ff07\\transformed\\ui-release\\res\\values-lv\\values-lv.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\0788a40bfcb30258e82e8a2e6ca80af9\\transformed\\core-1.13.1\\res\\values-lv\\values-lv.xml",
+                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\ccac4269d045329a9fc0978068f06745\\transformed\\core-1.13.1\\res\\values-lv\\values-lv.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

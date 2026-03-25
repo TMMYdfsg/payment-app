@@ -1,5 +1,12 @@
 package com.payment.app.ui.home
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +53,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.payment.app.ui.components.MonthSwitcher
 import com.payment.app.ui.components.SummaryMetricCard
@@ -62,17 +71,34 @@ fun HomeScreen(
     onNavigateToCardManage: () -> Unit,
     onNavigateToAccountManage: () -> Unit,
     onNavigateToAnalytics: (String) -> Unit,
+    onNavigateToYearlySummary: (String) -> Unit,
     onNavigateToSubscription: () -> Unit,
     onNavigateToCalendar: () -> Unit,
     onNavigateToNotification: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     var showResetDialog by remember { mutableStateOf(false) }
     var showBudgetDialog by remember { mutableStateOf(false) }
+    var showDriveDialog by remember { mutableStateOf(false) }
     var budgetInput by remember { mutableStateOf("") }
     var exportMessage by remember { mutableStateOf<String?>(null) }
+    var pendingBackupJson by remember { mutableStateOf<String?>(null) }
+    var driveToken by remember { mutableStateOf("") }
+    var driveFolderId by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
+    val backupLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        val json = pendingBackupJson
+        if (uri != null && json != null) {
+            scope.launch {
+                val saved = viewModel.saveBackupJson(uri, json)
+                exportMessage = if (saved) "JSONバックアップを保存しました" else "JSONバックアップ保存に失敗しました"
+            }
+        }
+    }
 
     if (showResetDialog) {
         AlertDialog(
@@ -121,6 +147,61 @@ fun HomeScreen(
         )
     }
 
+    if (showDriveDialog) {
+        AlertDialog(
+            onDismissRequest = { showDriveDialog = false },
+            title = { Text("Google Drive 同期") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = driveToken,
+                        onValueChange = { driveToken = it },
+                        label = { Text("アクセストークン") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = driveFolderId,
+                        onValueChange = { driveFolderId = it },
+                        label = { Text("フォルダID (任意)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        "Drive REST API v3 を利用してバックアップJSONをアップロードします。",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        scope.launch {
+                            val json = viewModel.buildBackupJson()
+                            val fileName = "payment_backup_${uiState.selectedYearMonth}_${System.currentTimeMillis()}.json"
+                            val result = viewModel.uploadBackupToDrive(
+                                accessToken = driveToken,
+                                folderId = driveFolderId.ifBlank { null },
+                                fileName = fileName,
+                                json = json
+                            )
+                            exportMessage = result.fold(
+                                onSuccess = { "Drive同期完了: fileId=$it" },
+                                onFailure = { "Drive同期失敗: ${it.message}" }
+                            )
+                        }
+                        showDriveDialog = false
+                    },
+                    enabled = driveToken.isNotBlank()
+                ) { Text("同期") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDriveDialog = false }) { Text("キャンセル") }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -128,6 +209,7 @@ fun HomeScreen(
                 actions = {
                     TextButton(onClick = onNavigateToAccountManage) { Text("口座") }
                     TextButton(onClick = { onNavigateToAnalytics(uiState.selectedYearMonth) }) { Text("分析") }
+                    TextButton(onClick = { onNavigateToYearlySummary(uiState.selectedYearMonth) }) { Text("年次") }
                     TextButton(onClick = onNavigateToSubscription) { Text("サブスク") }
                     TextButton(onClick = onNavigateToCalendar) { Text("カレンダー") }
                     IconButton(onClick = onNavigateToNotification) {
@@ -188,10 +270,45 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f),
                         onClick = {
                             scope.launch {
-                                exportMessage = viewModel.exportCurrentMonth() ?: "データがありません"
+                                val file = viewModel.exportCurrentMonth()
+                                if (file == null) {
+                                    exportMessage = "データがありません"
+                                    return@launch
+                                }
+                                val uri = FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.fileprovider",
+                                    file
+                                )
+                                val intent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/csv"
+                                    putExtra(Intent.EXTRA_STREAM, uri)
+                                    putExtra(Intent.EXTRA_SUBJECT, "payments_${uiState.selectedYearMonth}.csv")
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(Intent.createChooser(intent, "CSVを共有"))
+                                exportMessage = "CSV共有シートを開きました"
                             }
                         }
-                    ) { Text("CSV出力") }
+                    ) { Text("CSV共有") }
+                }
+                Row(
+                    modifier = Modifier.padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            scope.launch {
+                                pendingBackupJson = viewModel.buildBackupJson()
+                                backupLauncher.launch("payment_backup_${uiState.selectedYearMonth}.json")
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) { Text("JSON保存") }
+                    OutlinedButton(
+                        onClick = { showDriveDialog = true },
+                        modifier = Modifier.weight(1f)
+                    ) { Text("Drive同期") }
                 }
                 OutlinedButton(
                     onClick = {
@@ -214,10 +331,13 @@ fun HomeScreen(
             }
 
             item {
-                SummaryMetricCard(
-                    title = "月間総額",
-                    value = formatCurrency(uiState.totalAmount),
-                    modifier = Modifier.fillMaxWidth()
+                SharedTotalAmountCard(
+                    totalAmount = uiState.totalAmount,
+                    unpaidAmount = uiState.unpaidAmount,
+                    paidCount = uiState.paidCount,
+                    totalCount = uiState.totalCount,
+                    budgetAmount = uiState.budgetAmount,
+                    budgetRemaining = uiState.budgetRemaining
                 )
             }
 
@@ -387,6 +507,63 @@ fun HomeScreen(
                     onClick = { onNavigateToInput(null, uiState.selectedYearMonth) },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("全カード入力") }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTotalAmountCard(
+    totalAmount: Long,
+    unpaidAmount: Long,
+    paidCount: Int,
+    totalCount: Int,
+    budgetAmount: Long?,
+    budgetRemaining: Long?
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    SharedTransitionLayout {
+        AnimatedContent(targetState = expanded, label = "home_total_shared") { isExpanded ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .sharedBounds(
+                        sharedContentState = rememberSharedContentState(key = "home_total_card"),
+                        animatedVisibilityScope = this
+                    )
+                    .clickable { expanded = !expanded },
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isExpanded) {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    }
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        if (isExpanded) "月間サマリー（タップで戻る）" else "月間総額（タップで詳細）",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        formatCurrency(totalAmount),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (isExpanded) {
+                        Text("未完了: ${formatCurrency(unpaidAmount)}")
+                        Text("完了件数: $paidCount / $totalCount")
+                        if (budgetAmount != null) {
+                            Text("予算: ${formatCurrency(budgetAmount)}")
+                            Text("残り: ${formatCurrency(budgetRemaining ?: 0L)}")
+                        }
+                    }
+                }
             }
         }
     }

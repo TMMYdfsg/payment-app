@@ -12,6 +12,9 @@ interface NotificationSettingDao {
     @Query("SELECT * FROM notification_settings LIMIT 1")
     fun getSettings(): Flow<NotificationSettingEntity?>
 
+    @Query("SELECT * FROM notification_settings LIMIT 1")
+    suspend fun getSettingsOnce(): NotificationSettingEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(setting: NotificationSettingEntity): Long
 }

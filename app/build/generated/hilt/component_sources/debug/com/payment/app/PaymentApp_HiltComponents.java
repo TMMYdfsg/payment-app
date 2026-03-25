@@ -5,6 +5,7 @@ import com.payment.app.notifications.MonthlyReceiverEntryPoint;
 import com.payment.app.notifications.WorkerEntryPoint;
 import com.payment.app.ui.account.AccountManageViewModel_HiltModules;
 import com.payment.app.ui.analytics.AnalyticsViewModel_HiltModules;
+import com.payment.app.ui.analytics.YearlySummaryViewModel_HiltModules;
 import com.payment.app.ui.calendar.CalendarViewModel_HiltModules;
 import com.payment.app.ui.card.CardManageViewModel_HiltModules;
 import com.payment.app.ui.home.HomeViewModel_HiltModules;
@@ -12,6 +13,7 @@ import com.payment.app.ui.input.InputFlowViewModel_HiltModules;
 import com.payment.app.ui.list.ListViewModel_HiltModules;
 import com.payment.app.ui.notification.NotificationSettingsViewModel_HiltModules;
 import com.payment.app.ui.subscription.SubscriptionViewModel_HiltModules;
+import com.payment.app.widget.WidgetEntryPoint;
 import dagger.Binds;
 import dagger.Component;
 import dagger.Module;
@@ -147,6 +149,7 @@ public final class PaymentApp_HiltComponents {
   public abstract static class SingletonC implements PaymentApp_GeneratedInjector,
       MonthlyReceiverEntryPoint,
       WorkerEntryPoint,
+      WidgetEntryPoint,
       FragmentGetContextFix.FragmentGetContextFixEntryPoint,
       HiltWrapper_ActivityRetainedComponentManager_ActivityRetainedComponentBuilderEntryPoint,
       ServiceComponentManager.ServiceComponentBuilderEntryPoint,
@@ -177,7 +180,8 @@ public final class PaymentApp_HiltComponents {
           NotificationSettingsViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class,
-          SubscriptionViewModel_HiltModules.KeyModule.class
+          SubscriptionViewModel_HiltModules.KeyModule.class,
+          YearlySummaryViewModel_HiltModules.KeyModule.class
       }
   )
   @ActivityRetainedScoped
@@ -222,7 +226,8 @@ public final class PaymentApp_HiltComponents {
           InputFlowViewModel_HiltModules.BindsModule.class,
           ListViewModel_HiltModules.BindsModule.class,
           NotificationSettingsViewModel_HiltModules.BindsModule.class,
-          SubscriptionViewModel_HiltModules.BindsModule.class
+          SubscriptionViewModel_HiltModules.BindsModule.class,
+          YearlySummaryViewModel_HiltModules.BindsModule.class
       }
   )
   @ViewModelScoped

@@ -12,6 +12,9 @@ interface SubscriptionDao {
     @Query("SELECT * FROM subscriptions WHERE isActive = 1")
     fun getActiveSubscriptions(): Flow<List<SubscriptionEntity>>
 
+    @Query("SELECT * FROM subscriptions")
+    suspend fun getAllSubscriptionsOnce(): List<SubscriptionEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(subscription: SubscriptionEntity): Long
 }

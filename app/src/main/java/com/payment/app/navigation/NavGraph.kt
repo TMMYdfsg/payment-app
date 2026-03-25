@@ -12,6 +12,7 @@ import com.payment.app.ui.home.HomeScreen
 import com.payment.app.ui.input.InputFlowScreen
 import com.payment.app.ui.list.ListScreen
 import com.payment.app.ui.analytics.AnalyticsScreen
+import com.payment.app.ui.analytics.YearlySummaryScreen
 import com.payment.app.ui.subscription.SubscriptionScreen
 import com.payment.app.ui.calendar.CalendarScreen
 import com.payment.app.ui.notification.NotificationSettingsScreen
@@ -31,6 +32,9 @@ sealed class Screen(val route: String) {
     data object AccountManage : Screen("account_manage")
     data object Analytics : Screen("analytics?yearMonth={yearMonth}") {
         fun createRoute(yearMonth: String) = "analytics?yearMonth=$yearMonth"
+    }
+    data object YearlySummary : Screen("yearly_summary?yearMonth={yearMonth}") {
+        fun createRoute(yearMonth: String) = "yearly_summary?yearMonth=$yearMonth"
     }
     data object Subscription : Screen("subscription")
     data object Calendar : Screen("calendar")
@@ -58,6 +62,9 @@ fun NavGraph() {
                 },
                 onNavigateToAnalytics = { yearMonth ->
                     navController.navigate(Screen.Analytics.createRoute(yearMonth))
+                },
+                onNavigateToYearlySummary = { yearMonth ->
+                    navController.navigate(Screen.YearlySummary.createRoute(yearMonth))
                 },
                 onNavigateToSubscription = {
                     navController.navigate(Screen.Subscription.route)
@@ -131,6 +138,20 @@ fun NavGraph() {
             )
         ) { backStackEntry ->
             AnalyticsScreen(
+                yearMonth = backStackEntry.arguments?.getString("yearMonth"),
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = Screen.YearlySummary.route,
+            arguments = listOf(
+                navArgument("yearMonth") {
+                    type = NavType.StringType
+                    defaultValue = currentYearMonth().asStorageKey()
+                }
+            )
+        ) { backStackEntry ->
+            YearlySummaryScreen(
                 yearMonth = backStackEntry.arguments?.getString("yearMonth"),
                 onNavigateBack = { navController.popBackStack() }
             )

@@ -1,6 +1,7 @@
 package com.payment.app.data.db;
 
 import android.database.Cursor;
+import android.os.CancellationSignal;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.CoroutinesRoom;
@@ -117,6 +118,49 @@ public final class NotificationSettingDao_Impl implements NotificationSettingDao
         _statement.release();
       }
     });
+  }
+
+  @Override
+  public Object getSettingsOnce(final Continuation<? super NotificationSettingEntity> $completion) {
+    final String _sql = "SELECT * FROM notification_settings LIMIT 1";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<NotificationSettingEntity>() {
+      @Override
+      @Nullable
+      public NotificationSettingEntity call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfReminderLeadDays = CursorUtil.getColumnIndexOrThrow(_cursor, "reminderLeadDays");
+          final int _cursorIndexOfBudgetAlertThreshold = CursorUtil.getColumnIndexOrThrow(_cursor, "budgetAlertThreshold");
+          final int _cursorIndexOfMonthlyReminderDay = CursorUtil.getColumnIndexOrThrow(_cursor, "monthlyReminderDay");
+          final int _cursorIndexOfEnabled = CursorUtil.getColumnIndexOrThrow(_cursor, "enabled");
+          final NotificationSettingEntity _result;
+          if (_cursor.moveToFirst()) {
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final int _tmpReminderLeadDays;
+            _tmpReminderLeadDays = _cursor.getInt(_cursorIndexOfReminderLeadDays);
+            final int _tmpBudgetAlertThreshold;
+            _tmpBudgetAlertThreshold = _cursor.getInt(_cursorIndexOfBudgetAlertThreshold);
+            final int _tmpMonthlyReminderDay;
+            _tmpMonthlyReminderDay = _cursor.getInt(_cursorIndexOfMonthlyReminderDay);
+            final boolean _tmpEnabled;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfEnabled);
+            _tmpEnabled = _tmp != 0;
+            _result = new NotificationSettingEntity(_tmpId,_tmpReminderLeadDays,_tmpBudgetAlertThreshold,_tmpMonthlyReminderDay,_tmpEnabled);
+          } else {
+            _result = null;
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
   }
 
   @NonNull

@@ -15,6 +15,8 @@ import com.payment.app.data.db.entity.NotificationSettingEntity
 import com.payment.app.data.db.entity.PaymentEntity
 import com.payment.app.data.db.entity.SubscriptionEntity
 import com.payment.app.data.model.CardWithPayment
+import com.payment.app.data.model.PaymentHistoryItem
+import com.payment.app.data.model.BackupSnapshot
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -119,6 +121,10 @@ class PaymentRepository @Inject constructor(
         }
     }
 
+    suspend fun deletePayment(cardId: Long, yearMonth: String) {
+        paymentDao.deleteByCardAndMonth(cardId, yearMonth)
+    }
+
     suspend fun resetMonthAmounts(yearMonth: String) {
         paymentDao.resetMonthAmounts(yearMonth)
     }
@@ -191,6 +197,21 @@ class PaymentRepository @Inject constructor(
     }
 
     suspend fun getPaymentById(paymentId: Long): PaymentEntity? = paymentDao.getPaymentById(paymentId)
+
+    suspend fun searchPaymentHistory(query: String): List<PaymentHistoryItem> =
+        if (query.isBlank()) emptyList() else paymentDao.searchPaymentHistory(query.trim())
+
+    suspend fun getBackupSnapshot(): BackupSnapshot {
+        return BackupSnapshot(
+            cards = cardDao.getAllCardsOnce(),
+            payments = paymentDao.getAllPaymentsOnce(),
+            accounts = accountDao.getAllAccountsOnce(),
+            budgets = budgetDao.getAllBudgetsOnce(),
+            subscriptions = subscriptionDao.getAllSubscriptionsOnce(),
+            installments = installmentDao.getAllInstallmentsOnce(),
+            notificationSetting = notificationSettingDao.getSettingsOnce()
+        )
+    }
 
     private suspend fun upsertMonthlyPayment(
         cardId: Long,

@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payment.app.data.db.entity.BankAccountEntity
 import com.payment.app.data.model.CardWithPayment
+import com.payment.app.data.model.PaymentHistoryItem
 import com.payment.app.domain.usecase.GetMonthlyPaymentsUseCase
+import com.payment.app.domain.usecase.DeletePaymentUseCase
 import com.payment.app.domain.usecase.UpdatePaymentAccountUseCase
 import com.payment.app.domain.usecase.UpdatePaymentAmountUseCase
 import com.payment.app.domain.usecase.UpdatePaymentPaidUseCase
@@ -33,12 +35,15 @@ data class ListUiState(
     val totalAmount: Long = 0L,
     val paidAmount: Long = 0L,
     val unpaidAmount: Long = 0L,
+    val searchQuery: String = "",
+    val historyResults: List<PaymentHistoryItem> = emptyList(),
     val isLoading: Boolean = true
 )
 
 @HiltViewModel
 class ListViewModel @Inject constructor(
     getMonthlyPaymentsUseCase: GetMonthlyPaymentsUseCase,
+    private val deletePaymentUseCase: DeletePaymentUseCase,
     private val updatePaymentAmountUseCase: UpdatePaymentAmountUseCase,
     private val updatePaymentPaidUseCase: UpdatePaymentPaidUseCase,
     private val updatePaymentAccountUseCase: UpdatePaymentAccountUseCase,
@@ -46,16 +51,19 @@ class ListViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val selectedMonth = MutableStateFlow(currentYearMonth())
+    private val searchQuery = MutableStateFlow("")
 
     val uiState: StateFlow<ListUiState> = selectedMonth
         .flatMapLatest { yearMonth ->
             combine(
                 getMonthlyPaymentsUseCase(yearMonth.asStorageKey()),
-                repository.allAccounts
-            ) { cards, accounts ->
+                repository.allAccounts,
+                searchQuery
+            ) { cards, accounts, query ->
                 val grouped = cards.groupBy { it.dueDate }
                 val subtotals = grouped.mapValues { (_, list) -> list.sumOf { it.amount } }
                 val paidAmount = cards.filter { it.isPaid }.sumOf { it.amount }
+                val results = repository.searchPaymentHistory(query)
                 ListUiState(
                     selectedYearMonth = yearMonth.asStorageKey(),
                     monthLabel = yearMonth.asDisplayLabel(),
@@ -65,6 +73,8 @@ class ListViewModel @Inject constructor(
                     totalAmount = subtotals.values.sum(),
                     paidAmount = paidAmount,
                     unpaidAmount = subtotals.values.sum() - paidAmount,
+                    searchQuery = query,
+                    historyResults = results,
                     isLoading = false
                 )
             }
@@ -86,6 +96,10 @@ class ListViewModel @Inject constructor(
         selectedMonth.update { it.plusMonths(offset) }
     }
 
+    fun setSearchQuery(value: String) {
+        searchQuery.value = value
+    }
+
     fun updateAmount(cardId: Long, amount: Long) {
         viewModelScope.launch {
             updatePaymentAmountUseCase(cardId, selectedMonth.value.asStorageKey(), amount)
@@ -101,6 +115,12 @@ class ListViewModel @Inject constructor(
     fun updateAccount(cardId: Long, accountId: Long?) {
         viewModelScope.launch {
             updatePaymentAccountUseCase(cardId, selectedMonth.value.asStorageKey(), accountId)
+        }
+    }
+
+    fun deletePayment(cardId: Long) {
+        viewModelScope.launch {
+            deletePaymentUseCase(cardId, selectedMonth.value.asStorageKey())
         }
     }
 }

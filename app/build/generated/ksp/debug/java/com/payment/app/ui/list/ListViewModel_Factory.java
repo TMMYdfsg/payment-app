@@ -1,6 +1,7 @@
 package com.payment.app.ui.list;
 
 import com.payment.app.data.repository.PaymentRepository;
+import com.payment.app.domain.usecase.DeletePaymentUseCase;
 import com.payment.app.domain.usecase.GetMonthlyPaymentsUseCase;
 import com.payment.app.domain.usecase.UpdatePaymentAccountUseCase;
 import com.payment.app.domain.usecase.UpdatePaymentAmountUseCase;
@@ -30,6 +31,8 @@ import javax.inject.Provider;
 public final class ListViewModel_Factory implements Factory<ListViewModel> {
   private final Provider<GetMonthlyPaymentsUseCase> getMonthlyPaymentsUseCaseProvider;
 
+  private final Provider<DeletePaymentUseCase> deletePaymentUseCaseProvider;
+
   private final Provider<UpdatePaymentAmountUseCase> updatePaymentAmountUseCaseProvider;
 
   private final Provider<UpdatePaymentPaidUseCase> updatePaymentPaidUseCaseProvider;
@@ -40,11 +43,13 @@ public final class ListViewModel_Factory implements Factory<ListViewModel> {
 
   public ListViewModel_Factory(
       Provider<GetMonthlyPaymentsUseCase> getMonthlyPaymentsUseCaseProvider,
+      Provider<DeletePaymentUseCase> deletePaymentUseCaseProvider,
       Provider<UpdatePaymentAmountUseCase> updatePaymentAmountUseCaseProvider,
       Provider<UpdatePaymentPaidUseCase> updatePaymentPaidUseCaseProvider,
       Provider<UpdatePaymentAccountUseCase> updatePaymentAccountUseCaseProvider,
       Provider<PaymentRepository> repositoryProvider) {
     this.getMonthlyPaymentsUseCaseProvider = getMonthlyPaymentsUseCaseProvider;
+    this.deletePaymentUseCaseProvider = deletePaymentUseCaseProvider;
     this.updatePaymentAmountUseCaseProvider = updatePaymentAmountUseCaseProvider;
     this.updatePaymentPaidUseCaseProvider = updatePaymentPaidUseCaseProvider;
     this.updatePaymentAccountUseCaseProvider = updatePaymentAccountUseCaseProvider;
@@ -53,22 +58,24 @@ public final class ListViewModel_Factory implements Factory<ListViewModel> {
 
   @Override
   public ListViewModel get() {
-    return newInstance(getMonthlyPaymentsUseCaseProvider.get(), updatePaymentAmountUseCaseProvider.get(), updatePaymentPaidUseCaseProvider.get(), updatePaymentAccountUseCaseProvider.get(), repositoryProvider.get());
+    return newInstance(getMonthlyPaymentsUseCaseProvider.get(), deletePaymentUseCaseProvider.get(), updatePaymentAmountUseCaseProvider.get(), updatePaymentPaidUseCaseProvider.get(), updatePaymentAccountUseCaseProvider.get(), repositoryProvider.get());
   }
 
   public static ListViewModel_Factory create(
       Provider<GetMonthlyPaymentsUseCase> getMonthlyPaymentsUseCaseProvider,
+      Provider<DeletePaymentUseCase> deletePaymentUseCaseProvider,
       Provider<UpdatePaymentAmountUseCase> updatePaymentAmountUseCaseProvider,
       Provider<UpdatePaymentPaidUseCase> updatePaymentPaidUseCaseProvider,
       Provider<UpdatePaymentAccountUseCase> updatePaymentAccountUseCaseProvider,
       Provider<PaymentRepository> repositoryProvider) {
-    return new ListViewModel_Factory(getMonthlyPaymentsUseCaseProvider, updatePaymentAmountUseCaseProvider, updatePaymentPaidUseCaseProvider, updatePaymentAccountUseCaseProvider, repositoryProvider);
+    return new ListViewModel_Factory(getMonthlyPaymentsUseCaseProvider, deletePaymentUseCaseProvider, updatePaymentAmountUseCaseProvider, updatePaymentPaidUseCaseProvider, updatePaymentAccountUseCaseProvider, repositoryProvider);
   }
 
   public static ListViewModel newInstance(GetMonthlyPaymentsUseCase getMonthlyPaymentsUseCase,
+      DeletePaymentUseCase deletePaymentUseCase,
       UpdatePaymentAmountUseCase updatePaymentAmountUseCase,
       UpdatePaymentPaidUseCase updatePaymentPaidUseCase,
       UpdatePaymentAccountUseCase updatePaymentAccountUseCase, PaymentRepository repository) {
-    return new ListViewModel(getMonthlyPaymentsUseCase, updatePaymentAmountUseCase, updatePaymentPaidUseCase, updatePaymentAccountUseCase, repository);
+    return new ListViewModel(getMonthlyPaymentsUseCase, deletePaymentUseCase, updatePaymentAmountUseCase, updatePaymentPaidUseCase, updatePaymentAccountUseCase, repository);
   }
 }

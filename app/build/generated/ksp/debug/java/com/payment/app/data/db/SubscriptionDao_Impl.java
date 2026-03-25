@@ -1,6 +1,7 @@
 package com.payment.app.data.db;
 
 import android.database.Cursor;
+import android.os.CancellationSignal;
 import androidx.annotation.NonNull;
 import androidx.room.CoroutinesRoom;
 import androidx.room.EntityInsertionAdapter;
@@ -121,6 +122,53 @@ public final class SubscriptionDao_Impl implements SubscriptionDao {
         _statement.release();
       }
     });
+  }
+
+  @Override
+  public Object getAllSubscriptionsOnce(
+      final Continuation<? super List<SubscriptionEntity>> $completion) {
+    final String _sql = "SELECT * FROM subscriptions";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<SubscriptionEntity>>() {
+      @Override
+      @NonNull
+      public List<SubscriptionEntity> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfSubscriptionId = CursorUtil.getColumnIndexOrThrow(_cursor, "subscriptionId");
+          final int _cursorIndexOfCardId = CursorUtil.getColumnIndexOrThrow(_cursor, "cardId");
+          final int _cursorIndexOfServiceName = CursorUtil.getColumnIndexOrThrow(_cursor, "serviceName");
+          final int _cursorIndexOfAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "amount");
+          final int _cursorIndexOfBillingDay = CursorUtil.getColumnIndexOrThrow(_cursor, "billingDay");
+          final int _cursorIndexOfIsActive = CursorUtil.getColumnIndexOrThrow(_cursor, "isActive");
+          final List<SubscriptionEntity> _result = new ArrayList<SubscriptionEntity>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final SubscriptionEntity _item;
+            final long _tmpSubscriptionId;
+            _tmpSubscriptionId = _cursor.getLong(_cursorIndexOfSubscriptionId);
+            final long _tmpCardId;
+            _tmpCardId = _cursor.getLong(_cursorIndexOfCardId);
+            final String _tmpServiceName;
+            _tmpServiceName = _cursor.getString(_cursorIndexOfServiceName);
+            final long _tmpAmount;
+            _tmpAmount = _cursor.getLong(_cursorIndexOfAmount);
+            final int _tmpBillingDay;
+            _tmpBillingDay = _cursor.getInt(_cursorIndexOfBillingDay);
+            final boolean _tmpIsActive;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsActive);
+            _tmpIsActive = _tmp != 0;
+            _item = new SubscriptionEntity(_tmpSubscriptionId,_tmpCardId,_tmpServiceName,_tmpAmount,_tmpBillingDay,_tmpIsActive);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
   }
 
   @NonNull

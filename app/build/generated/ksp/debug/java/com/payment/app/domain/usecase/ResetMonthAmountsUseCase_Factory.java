@@ -1,6 +1,7 @@
 package com.payment.app.domain.usecase;
 
 import com.payment.app.data.repository.PaymentRepository;
+import com.payment.app.widget.WidgetUpdater;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
@@ -26,21 +27,27 @@ import javax.inject.Provider;
 public final class ResetMonthAmountsUseCase_Factory implements Factory<ResetMonthAmountsUseCase> {
   private final Provider<PaymentRepository> repositoryProvider;
 
-  public ResetMonthAmountsUseCase_Factory(Provider<PaymentRepository> repositoryProvider) {
+  private final Provider<WidgetUpdater> widgetUpdaterProvider;
+
+  public ResetMonthAmountsUseCase_Factory(Provider<PaymentRepository> repositoryProvider,
+      Provider<WidgetUpdater> widgetUpdaterProvider) {
     this.repositoryProvider = repositoryProvider;
+    this.widgetUpdaterProvider = widgetUpdaterProvider;
   }
 
   @Override
   public ResetMonthAmountsUseCase get() {
-    return newInstance(repositoryProvider.get());
+    return newInstance(repositoryProvider.get(), widgetUpdaterProvider.get());
   }
 
   public static ResetMonthAmountsUseCase_Factory create(
-      Provider<PaymentRepository> repositoryProvider) {
-    return new ResetMonthAmountsUseCase_Factory(repositoryProvider);
+      Provider<PaymentRepository> repositoryProvider,
+      Provider<WidgetUpdater> widgetUpdaterProvider) {
+    return new ResetMonthAmountsUseCase_Factory(repositoryProvider, widgetUpdaterProvider);
   }
 
-  public static ResetMonthAmountsUseCase newInstance(PaymentRepository repository) {
-    return new ResetMonthAmountsUseCase(repository);
+  public static ResetMonthAmountsUseCase newInstance(PaymentRepository repository,
+      WidgetUpdater widgetUpdater) {
+    return new ResetMonthAmountsUseCase(repository, widgetUpdater);
   }
 }

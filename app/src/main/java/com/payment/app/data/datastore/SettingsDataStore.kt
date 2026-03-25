@@ -23,6 +23,7 @@ class SettingsDataStore @Inject constructor(
 
     private object Keys {
         val themeMode = stringPreferencesKey("theme_mode")
+        val themeAccent = stringPreferencesKey("theme_accent")
         val lockEnabled = booleanPreferencesKey("lock_enabled")
         val reminderLeadDays = intPreferencesKey("reminder_lead_days")
         val budgetAlertThreshold = intPreferencesKey("budget_alert_threshold")
@@ -34,6 +35,10 @@ class SettingsDataStore @Inject constructor(
 
     val lockEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
         prefs[Keys.lockEnabled] ?: false
+    }
+
+    val themeAccent: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[Keys.themeAccent] ?: "ocean"
     }
 
     val reminderLeadDays: Flow<Int> = context.dataStore.data.map { prefs ->
@@ -49,6 +54,10 @@ class SettingsDataStore @Inject constructor(
 
     suspend fun setLockEnabled(enabled: Boolean) {
         context.dataStore.edit { it[Keys.lockEnabled] = enabled }
+    }
+
+    suspend fun setThemeAccent(accent: String) {
+        context.dataStore.edit { it[Keys.themeAccent] = accent }
     }
 
     suspend fun setReminderLeadDays(days: Int) {
