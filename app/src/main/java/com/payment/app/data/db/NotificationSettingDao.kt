@@ -20,4 +20,7 @@ interface NotificationSettingDao {
 
     @Query("DELETE FROM notification_settings WHERE id != :keepId")
     suspend fun deleteOthers(keepId: Long)
+
+    @Query("DELETE FROM notification_settings")
+    suspend fun clearAll()
 }

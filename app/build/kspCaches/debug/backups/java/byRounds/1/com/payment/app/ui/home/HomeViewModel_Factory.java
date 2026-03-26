@@ -1,6 +1,7 @@
 package com.payment.app.ui.home;
 
 import com.payment.app.data.repository.PaymentRepository;
+import com.payment.app.domain.usecase.ApplyPreviousMonthTemplateUseCase;
 import com.payment.app.domain.usecase.ExportBackupJsonUseCase;
 import com.payment.app.domain.usecase.ExportPaymentsUseCase;
 import com.payment.app.domain.usecase.GetBudgetUseCase;
@@ -40,6 +41,8 @@ public final class HomeViewModel_Factory implements Factory<HomeViewModel> {
 
   private final Provider<MarkAllPaidUseCase> markAllPaidUseCaseProvider;
 
+  private final Provider<ApplyPreviousMonthTemplateUseCase> applyPreviousMonthTemplateUseCaseProvider;
+
   private final Provider<UpdateBudgetUseCase> updateBudgetUseCaseProvider;
 
   private final Provider<ExportPaymentsUseCase> exportPaymentsUseCaseProvider;
@@ -60,6 +63,7 @@ public final class HomeViewModel_Factory implements Factory<HomeViewModel> {
       Provider<GetMonthlyPaymentsUseCase> getMonthlyPaymentsUseCaseProvider,
       Provider<GetBudgetUseCase> getBudgetUseCaseProvider,
       Provider<MarkAllPaidUseCase> markAllPaidUseCaseProvider,
+      Provider<ApplyPreviousMonthTemplateUseCase> applyPreviousMonthTemplateUseCaseProvider,
       Provider<UpdateBudgetUseCase> updateBudgetUseCaseProvider,
       Provider<ExportPaymentsUseCase> exportPaymentsUseCaseProvider,
       Provider<ExportBackupJsonUseCase> exportBackupJsonUseCaseProvider,
@@ -71,6 +75,7 @@ public final class HomeViewModel_Factory implements Factory<HomeViewModel> {
     this.getMonthlyPaymentsUseCaseProvider = getMonthlyPaymentsUseCaseProvider;
     this.getBudgetUseCaseProvider = getBudgetUseCaseProvider;
     this.markAllPaidUseCaseProvider = markAllPaidUseCaseProvider;
+    this.applyPreviousMonthTemplateUseCaseProvider = applyPreviousMonthTemplateUseCaseProvider;
     this.updateBudgetUseCaseProvider = updateBudgetUseCaseProvider;
     this.exportPaymentsUseCaseProvider = exportPaymentsUseCaseProvider;
     this.exportBackupJsonUseCaseProvider = exportBackupJsonUseCaseProvider;
@@ -83,13 +88,14 @@ public final class HomeViewModel_Factory implements Factory<HomeViewModel> {
 
   @Override
   public HomeViewModel get() {
-    return newInstance(getMonthlyPaymentsUseCaseProvider.get(), getBudgetUseCaseProvider.get(), markAllPaidUseCaseProvider.get(), updateBudgetUseCaseProvider.get(), exportPaymentsUseCaseProvider.get(), exportBackupJsonUseCaseProvider.get(), uploadBackupToDriveUseCaseProvider.get(), getMonthlyPaymentsOnceUseCaseProvider.get(), resetMonthAmountsUseCaseProvider.get(), repositoryProvider.get(), reminderSchedulerProvider.get());
+    return newInstance(getMonthlyPaymentsUseCaseProvider.get(), getBudgetUseCaseProvider.get(), markAllPaidUseCaseProvider.get(), applyPreviousMonthTemplateUseCaseProvider.get(), updateBudgetUseCaseProvider.get(), exportPaymentsUseCaseProvider.get(), exportBackupJsonUseCaseProvider.get(), uploadBackupToDriveUseCaseProvider.get(), getMonthlyPaymentsOnceUseCaseProvider.get(), resetMonthAmountsUseCaseProvider.get(), repositoryProvider.get(), reminderSchedulerProvider.get());
   }
 
   public static HomeViewModel_Factory create(
       Provider<GetMonthlyPaymentsUseCase> getMonthlyPaymentsUseCaseProvider,
       Provider<GetBudgetUseCase> getBudgetUseCaseProvider,
       Provider<MarkAllPaidUseCase> markAllPaidUseCaseProvider,
+      Provider<ApplyPreviousMonthTemplateUseCase> applyPreviousMonthTemplateUseCaseProvider,
       Provider<UpdateBudgetUseCase> updateBudgetUseCaseProvider,
       Provider<ExportPaymentsUseCase> exportPaymentsUseCaseProvider,
       Provider<ExportBackupJsonUseCase> exportBackupJsonUseCaseProvider,
@@ -98,17 +104,18 @@ public final class HomeViewModel_Factory implements Factory<HomeViewModel> {
       Provider<ResetMonthAmountsUseCase> resetMonthAmountsUseCaseProvider,
       Provider<PaymentRepository> repositoryProvider,
       Provider<ReminderScheduler> reminderSchedulerProvider) {
-    return new HomeViewModel_Factory(getMonthlyPaymentsUseCaseProvider, getBudgetUseCaseProvider, markAllPaidUseCaseProvider, updateBudgetUseCaseProvider, exportPaymentsUseCaseProvider, exportBackupJsonUseCaseProvider, uploadBackupToDriveUseCaseProvider, getMonthlyPaymentsOnceUseCaseProvider, resetMonthAmountsUseCaseProvider, repositoryProvider, reminderSchedulerProvider);
+    return new HomeViewModel_Factory(getMonthlyPaymentsUseCaseProvider, getBudgetUseCaseProvider, markAllPaidUseCaseProvider, applyPreviousMonthTemplateUseCaseProvider, updateBudgetUseCaseProvider, exportPaymentsUseCaseProvider, exportBackupJsonUseCaseProvider, uploadBackupToDriveUseCaseProvider, getMonthlyPaymentsOnceUseCaseProvider, resetMonthAmountsUseCaseProvider, repositoryProvider, reminderSchedulerProvider);
   }
 
   public static HomeViewModel newInstance(GetMonthlyPaymentsUseCase getMonthlyPaymentsUseCase,
       GetBudgetUseCase getBudgetUseCase, MarkAllPaidUseCase markAllPaidUseCase,
+      ApplyPreviousMonthTemplateUseCase applyPreviousMonthTemplateUseCase,
       UpdateBudgetUseCase updateBudgetUseCase, ExportPaymentsUseCase exportPaymentsUseCase,
       ExportBackupJsonUseCase exportBackupJsonUseCase,
       UploadBackupToDriveUseCase uploadBackupToDriveUseCase,
       GetMonthlyPaymentsOnceUseCase getMonthlyPaymentsOnceUseCase,
       ResetMonthAmountsUseCase resetMonthAmountsUseCase, PaymentRepository repository,
       ReminderScheduler reminderScheduler) {
-    return new HomeViewModel(getMonthlyPaymentsUseCase, getBudgetUseCase, markAllPaidUseCase, updateBudgetUseCase, exportPaymentsUseCase, exportBackupJsonUseCase, uploadBackupToDriveUseCase, getMonthlyPaymentsOnceUseCase, resetMonthAmountsUseCase, repository, reminderScheduler);
+    return new HomeViewModel(getMonthlyPaymentsUseCase, getBudgetUseCase, markAllPaidUseCase, applyPreviousMonthTemplateUseCase, updateBudgetUseCase, exportPaymentsUseCase, exportBackupJsonUseCase, uploadBackupToDriveUseCase, getMonthlyPaymentsOnceUseCase, resetMonthAmountsUseCase, repository, reminderScheduler);
   }
 }

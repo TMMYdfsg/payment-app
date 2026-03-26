@@ -1,6 +1,9 @@
 package com.payment.app;
 
+import com.payment.app.data.datastore.SettingsDataStore;
 import com.payment.app.data.repository.PaymentRepository;
+import com.payment.app.domain.usecase.DownloadSharedBackupFromDriveUseCase;
+import com.payment.app.domain.usecase.ImportBackupJsonUseCase;
 import com.payment.app.notifications.ReminderScheduler;
 import com.payment.app.widget.WidgetUpdater;
 import dagger.MembersInjector;
@@ -31,19 +34,32 @@ public final class PaymentApp_MembersInjector implements MembersInjector<Payment
 
   private final Provider<WidgetUpdater> widgetUpdaterProvider;
 
+  private final Provider<SettingsDataStore> settingsDataStoreProvider;
+
+  private final Provider<DownloadSharedBackupFromDriveUseCase> downloadSharedBackupFromDriveUseCaseProvider;
+
+  private final Provider<ImportBackupJsonUseCase> importBackupJsonUseCaseProvider;
+
   public PaymentApp_MembersInjector(Provider<ReminderScheduler> reminderSchedulerProvider,
-      Provider<PaymentRepository> repositoryProvider,
-      Provider<WidgetUpdater> widgetUpdaterProvider) {
+      Provider<PaymentRepository> repositoryProvider, Provider<WidgetUpdater> widgetUpdaterProvider,
+      Provider<SettingsDataStore> settingsDataStoreProvider,
+      Provider<DownloadSharedBackupFromDriveUseCase> downloadSharedBackupFromDriveUseCaseProvider,
+      Provider<ImportBackupJsonUseCase> importBackupJsonUseCaseProvider) {
     this.reminderSchedulerProvider = reminderSchedulerProvider;
     this.repositoryProvider = repositoryProvider;
     this.widgetUpdaterProvider = widgetUpdaterProvider;
+    this.settingsDataStoreProvider = settingsDataStoreProvider;
+    this.downloadSharedBackupFromDriveUseCaseProvider = downloadSharedBackupFromDriveUseCaseProvider;
+    this.importBackupJsonUseCaseProvider = importBackupJsonUseCaseProvider;
   }
 
   public static MembersInjector<PaymentApp> create(
       Provider<ReminderScheduler> reminderSchedulerProvider,
-      Provider<PaymentRepository> repositoryProvider,
-      Provider<WidgetUpdater> widgetUpdaterProvider) {
-    return new PaymentApp_MembersInjector(reminderSchedulerProvider, repositoryProvider, widgetUpdaterProvider);
+      Provider<PaymentRepository> repositoryProvider, Provider<WidgetUpdater> widgetUpdaterProvider,
+      Provider<SettingsDataStore> settingsDataStoreProvider,
+      Provider<DownloadSharedBackupFromDriveUseCase> downloadSharedBackupFromDriveUseCaseProvider,
+      Provider<ImportBackupJsonUseCase> importBackupJsonUseCaseProvider) {
+    return new PaymentApp_MembersInjector(reminderSchedulerProvider, repositoryProvider, widgetUpdaterProvider, settingsDataStoreProvider, downloadSharedBackupFromDriveUseCaseProvider, importBackupJsonUseCaseProvider);
   }
 
   @Override
@@ -51,6 +67,9 @@ public final class PaymentApp_MembersInjector implements MembersInjector<Payment
     injectReminderScheduler(instance, reminderSchedulerProvider.get());
     injectRepository(instance, repositoryProvider.get());
     injectWidgetUpdater(instance, widgetUpdaterProvider.get());
+    injectSettingsDataStore(instance, settingsDataStoreProvider.get());
+    injectDownloadSharedBackupFromDriveUseCase(instance, downloadSharedBackupFromDriveUseCaseProvider.get());
+    injectImportBackupJsonUseCase(instance, importBackupJsonUseCaseProvider.get());
   }
 
   @InjectedFieldSignature("com.payment.app.PaymentApp.reminderScheduler")
@@ -67,5 +86,23 @@ public final class PaymentApp_MembersInjector implements MembersInjector<Payment
   @InjectedFieldSignature("com.payment.app.PaymentApp.widgetUpdater")
   public static void injectWidgetUpdater(PaymentApp instance, WidgetUpdater widgetUpdater) {
     instance.widgetUpdater = widgetUpdater;
+  }
+
+  @InjectedFieldSignature("com.payment.app.PaymentApp.settingsDataStore")
+  public static void injectSettingsDataStore(PaymentApp instance,
+      SettingsDataStore settingsDataStore) {
+    instance.settingsDataStore = settingsDataStore;
+  }
+
+  @InjectedFieldSignature("com.payment.app.PaymentApp.downloadSharedBackupFromDriveUseCase")
+  public static void injectDownloadSharedBackupFromDriveUseCase(PaymentApp instance,
+      DownloadSharedBackupFromDriveUseCase downloadSharedBackupFromDriveUseCase) {
+    instance.downloadSharedBackupFromDriveUseCase = downloadSharedBackupFromDriveUseCase;
+  }
+
+  @InjectedFieldSignature("com.payment.app.PaymentApp.importBackupJsonUseCase")
+  public static void injectImportBackupJsonUseCase(PaymentApp instance,
+      ImportBackupJsonUseCase importBackupJsonUseCase) {
+    instance.importBackupJsonUseCase = importBackupJsonUseCase;
   }
 }

@@ -155,6 +155,87 @@ fun AnalyticsScreen(
             }
 
             item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text("月末着地予測", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(
+                            formatCurrency(uiState.forecastMonthEndTotal),
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            if (uiState.forecastDelta >= 0L) {
+                                "今月実績との差分 +${formatCurrency(uiState.forecastDelta)}"
+                            } else {
+                                "今月実績との差分 ${formatCurrency(uiState.forecastDelta)}"
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            if (uiState.anomalyCards.isNotEmpty()) {
+                item {
+                    Text("急増アラート", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                }
+                items(uiState.anomalyCards) { (cardName, amount) ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = androidx.compose.material3.CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(cardName, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onErrorContainer)
+                                Text(
+                                    "過去3ヶ月平均より大きく増加",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
+                            Text(formatCurrency(amount), fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onErrorContainer)
+                        }
+                    }
+                }
+            }
+
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text("コスト最適化提案", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        uiState.optimizationSuggestions.forEach { suggestion ->
+                            Text(
+                                "• $suggestion",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+
+            item {
                 Text("カテゴリ別内訳", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             }
 
@@ -229,4 +310,3 @@ fun AnalyticsScreen(
         }
     }
 }
-

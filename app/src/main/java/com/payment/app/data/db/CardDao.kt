@@ -24,9 +24,18 @@ interface CardDao {
     @Insert
     suspend fun insertCards(cards: List<CardEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCardsReplace(cards: List<CardEntity>)
+
     @Delete
     suspend fun deleteCard(card: CardEntity)
 
+    @Query("UPDATE cards SET category = :category WHERE cardId = :cardId")
+    suspend fun updateCategory(cardId: Long, category: String)
+
     @Query("SELECT COUNT(*) FROM cards")
     suspend fun getCardCount(): Int
+
+    @Query("DELETE FROM cards")
+    suspend fun clearAll()
 }

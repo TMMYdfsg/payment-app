@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import android.net.Uri
 import com.payment.app.data.db.entity.BudgetEntity
 import com.payment.app.data.model.CardWithPayment
+import com.payment.app.domain.usecase.ApplyPreviousMonthTemplateUseCase
 import com.payment.app.domain.usecase.ExportPaymentsUseCase
 import com.payment.app.domain.usecase.ExportBackupJsonUseCase
 import com.payment.app.domain.usecase.GetBudgetUseCase
@@ -55,10 +56,20 @@ data class HomeUiState(
     val unpaidAmount: Long = 0L,
     val paidCount: Int = 0,
     val totalCount: Int = 0,
+    val nextActions: List<NextActionItem> = emptyList(),
+    val overdueActionCount: Int = 0,
     val dueDates: List<Int> = emptyList(),
     val scheduleGroups: List<ScheduleGroup> = emptyList(),
     val accountTotals: Map<String, Long> = emptyMap(),
     val isLoading: Boolean = true
+)
+
+data class NextActionItem(
+    val cardId: Long,
+    val cardName: String,
+    val dueDate: Int,
+    val scheduledDate: LocalDate,
+    val amount: Long
 )
 
 @HiltViewModel
@@ -66,6 +77,7 @@ class HomeViewModel @Inject constructor(
     getMonthlyPaymentsUseCase: GetMonthlyPaymentsUseCase,
     getBudgetUseCase: GetBudgetUseCase,
     private val markAllPaidUseCase: MarkAllPaidUseCase,
+    private val applyPreviousMonthTemplateUseCase: ApplyPreviousMonthTemplateUseCase,
     private val updateBudgetUseCase: UpdateBudgetUseCase,
     private val exportPaymentsUseCase: ExportPaymentsUseCase,
     private val exportBackupJsonUseCase: ExportBackupJsonUseCase,
@@ -103,6 +115,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             markAllPaidUseCase(selectedMonth.value.asStorageKey())
         }
+    }
+
+    suspend fun applyPreviousMonthTemplate(): Int {
+        return applyPreviousMonthTemplateUseCase(selectedMonth.value.asStorageKey())
     }
 
     fun updateBudget(amount: Long) {
@@ -186,6 +202,25 @@ class HomeViewModel @Inject constructor(
             .toMap()
         val budgetAmount = budget?.amount
         val budgetRemaining = budgetAmount?.let { it - subtotals.values.sum() }
+        val today = LocalDate.now()
+        val nextActions = cards
+            .filter { !it.isPaid }
+            .map { card ->
+                val schedule = calculateBillingDate(yearMonth, card.dueDate).scheduledDate
+                NextActionItem(
+                    cardId = card.cardId,
+                    cardName = card.cardName,
+                    dueDate = card.dueDate,
+                    scheduledDate = schedule,
+                    amount = card.amount
+                )
+            }
+            .sortedWith(
+                compareBy<NextActionItem> { it.scheduledDate }
+                    .thenByDescending { it.amount }
+                    .thenBy { it.cardName }
+            )
+        val overdueActionCount = nextActions.count { it.scheduledDate.isBefore(today) }
 
         return HomeUiState(
             selectedYearMonth = yearMonth.asStorageKey(),
@@ -199,6 +234,8 @@ class HomeViewModel @Inject constructor(
             unpaidAmount = subtotals.values.sum() - paidAmount,
             paidCount = cards.count { it.isPaid },
             totalCount = cards.size,
+            nextActions = nextActions.take(4),
+            overdueActionCount = overdueActionCount,
             dueDates = grouped.keys.sorted(),
             scheduleGroups = scheduleGroups,
             accountTotals = accountTotals,

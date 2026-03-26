@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,8 +54,11 @@ sealed class Screen(val route: String, val tab: AppTab = AppTab.HOME) {
             "input_flow?yearMonth=$yearMonth&dueDate=${dueDate ?: -1}"
     }
 
-    data object List : Screen("list?yearMonth={yearMonth}", AppTab.HOME) {
-        fun createRoute(yearMonth: String) = "list?yearMonth=$yearMonth"
+    data object List : Screen("list?yearMonth={yearMonth}&filter={filter}", AppTab.HOME) {
+        fun createRoute(yearMonth: String, unpaidOnly: Boolean = false): String {
+            val filter = if (unpaidOnly) "unpaid" else "all"
+            return "list?yearMonth=$yearMonth&filter=$filter"
+        }
     }
 
     data object CardManage : Screen("card_manage", AppTab.HOME)
@@ -73,10 +77,22 @@ sealed class Screen(val route: String, val tab: AppTab = AppTab.HOME) {
 }
 
 @Composable
-fun NavGraph() {
+fun NavGraph(
+    launchRoute: String? = null,
+    onLaunchRouteConsumed: () -> Unit = {}
+) {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentTab = resolveCurrentTab(currentBackStack?.destination)
+
+    LaunchedEffect(launchRoute) {
+        if (launchRoute.isNullOrBlank()) return@LaunchedEffect
+        navController.navigate(launchRoute, navOptions = navOptions {
+            launchSingleTop = true
+            restoreState = true
+        })
+        onLaunchRouteConsumed()
+    }
 
     Scaffold(
         bottomBar = {
@@ -165,6 +181,9 @@ fun NavGraph() {
                     onNavigateToList = { yearMonth ->
                         navController.navigate(Screen.List.createRoute(yearMonth))
                     },
+                    onNavigateToUnpaidList = { yearMonth ->
+                        navController.navigate(Screen.List.createRoute(yearMonth, unpaidOnly = true))
+                    },
                     onNavigateToCardManage = {
                         navController.navigate(Screen.CardManage.route)
                     },
@@ -218,11 +237,16 @@ fun NavGraph() {
                     navArgument("yearMonth") {
                         type = NavType.StringType
                         defaultValue = currentYearMonth().asStorageKey()
+                    },
+                    navArgument("filter") {
+                        type = NavType.StringType
+                        defaultValue = "all"
                     }
                 )
             ) { backStackEntry ->
                 ListScreen(
                     yearMonth = backStackEntry.arguments?.getString("yearMonth"),
+                    filter = backStackEntry.arguments?.getString("filter"),
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToAccountManage = {
                         navController.navigate(Screen.AccountManage.route)

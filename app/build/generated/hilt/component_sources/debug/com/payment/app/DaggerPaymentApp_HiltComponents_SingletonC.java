@@ -25,30 +25,60 @@ import com.payment.app.di.AppModule_ProvideNotificationSettingDaoFactory;
 import com.payment.app.di.AppModule_ProvidePaymentDaoFactory;
 import com.payment.app.di.AppModule_ProvideSettingsDataStoreFactory;
 import com.payment.app.di.AppModule_ProvideSubscriptionDaoFactory;
+import com.payment.app.domain.usecase.ApplyPreviousMonthTemplateUseCase;
+import com.payment.app.domain.usecase.ClearPinHashUseCase;
+import com.payment.app.domain.usecase.CreateDriveFolderUseCase;
 import com.payment.app.domain.usecase.DeletePaymentUseCase;
+import com.payment.app.domain.usecase.DownloadSharedBackupFromDriveUseCase;
 import com.payment.app.domain.usecase.ExportBackupJsonUseCase;
 import com.payment.app.domain.usecase.ExportPaymentsUseCase;
 import com.payment.app.domain.usecase.GetBudgetUseCase;
+import com.payment.app.domain.usecase.GetCloudSyncPrefsUseCase;
+import com.payment.app.domain.usecase.GetDriveAccessTokenUseCase;
+import com.payment.app.domain.usecase.GetDriveFolderIdUseCase;
+import com.payment.app.domain.usecase.GetDriveGroupNameUseCase;
 import com.payment.app.domain.usecase.GetInstallmentsUseCase;
 import com.payment.app.domain.usecase.GetLockEnabledUseCase;
 import com.payment.app.domain.usecase.GetMonthlyPaymentsOnceUseCase;
 import com.payment.app.domain.usecase.GetMonthlyPaymentsUseCase;
 import com.payment.app.domain.usecase.GetNotificationSettingsUseCase;
+import com.payment.app.domain.usecase.GetOcrProfilesJsonUseCase;
+import com.payment.app.domain.usecase.GetPinHashUseCase;
 import com.payment.app.domain.usecase.GetSubscriptionsUseCase;
+import com.payment.app.domain.usecase.GetSyncAccountEmailUseCase;
 import com.payment.app.domain.usecase.GetThemeAccentUseCase;
 import com.payment.app.domain.usecase.GetThemeModeUseCase;
+import com.payment.app.domain.usecase.GetUnlockGraceEnabledUseCase;
+import com.payment.app.domain.usecase.ImportBackupJsonUseCase;
+import com.payment.app.domain.usecase.InviteDriveMemberUseCase;
+import com.payment.app.domain.usecase.ListDriveMembersUseCase;
 import com.payment.app.domain.usecase.MarkAllPaidUseCase;
+import com.payment.app.domain.usecase.RecognizeAmountFromImageUseCase;
+import com.payment.app.domain.usecase.RemoveDriveMemberUseCase;
 import com.payment.app.domain.usecase.ResetMonthAmountsUseCase;
+import com.payment.app.domain.usecase.SetCloudLastSyncUseCase;
+import com.payment.app.domain.usecase.SetCloudSyncEnabledUseCase;
+import com.payment.app.domain.usecase.SetDriveAccessTokenUseCase;
+import com.payment.app.domain.usecase.SetDriveFolderIdUseCase;
+import com.payment.app.domain.usecase.SetDriveGroupNameUseCase;
 import com.payment.app.domain.usecase.SetLockEnabledUseCase;
+import com.payment.app.domain.usecase.SetOcrProfilesJsonUseCase;
+import com.payment.app.domain.usecase.SetPinHashUseCase;
+import com.payment.app.domain.usecase.SetSyncAccountEmailUseCase;
 import com.payment.app.domain.usecase.SetThemeAccentUseCase;
 import com.payment.app.domain.usecase.SetThemeModeUseCase;
+import com.payment.app.domain.usecase.SetUnlockGraceEnabledUseCase;
+import com.payment.app.domain.usecase.SetUnlockGraceUntilUseCase;
 import com.payment.app.domain.usecase.UpdateBudgetUseCase;
+import com.payment.app.domain.usecase.UpdateCardCategoryUseCase;
+import com.payment.app.domain.usecase.UpdateDriveMemberRoleUseCase;
 import com.payment.app.domain.usecase.UpdatePaymentAccountUseCase;
 import com.payment.app.domain.usecase.UpdatePaymentAmountUseCase;
 import com.payment.app.domain.usecase.UpdatePaymentPaidUseCase;
 import com.payment.app.domain.usecase.UploadBackupToDriveUseCase;
 import com.payment.app.domain.usecase.UpsertInstallmentUseCase;
 import com.payment.app.domain.usecase.UpsertNotificationSettingUseCase;
+import com.payment.app.domain.usecase.UpsertSharedBackupToDriveUseCase;
 import com.payment.app.domain.usecase.UpsertSubscriptionUseCase;
 import com.payment.app.notifications.ReminderScheduler;
 import com.payment.app.ui.account.AccountManageViewModel;
@@ -422,6 +452,10 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     }
 
+    private SetUnlockGraceUntilUseCase setUnlockGraceUntilUseCase() {
+      return new SetUnlockGraceUntilUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
     @Override
     public void injectMainActivity(MainActivity mainActivity) {
       injectMainActivity2(mainActivity);
@@ -454,6 +488,7 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     private MainActivity injectMainActivity2(MainActivity instance) {
       MainActivity_MembersInjector.injectSettingsDataStore(instance, singletonCImpl.provideSettingsDataStoreProvider.get());
+      MainActivity_MembersInjector.injectSetUnlockGraceUntil(instance, setUnlockGraceUntilUseCase());
       return instance;
     }
 
@@ -461,19 +496,19 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
     private static final class LazyClassKeyProvider {
       static String com_payment_app_ui_analytics_AnalyticsViewModel = "com.payment.app.ui.analytics.AnalyticsViewModel";
 
-      static String com_payment_app_ui_notification_NotificationSettingsViewModel = "com.payment.app.ui.notification.NotificationSettingsViewModel";
-
       static String com_payment_app_ui_subscription_SubscriptionViewModel = "com.payment.app.ui.subscription.SubscriptionViewModel";
-
-      static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
-
-      static String com_payment_app_ui_home_HomeViewModel = "com.payment.app.ui.home.HomeViewModel";
 
       static String com_payment_app_ui_card_CardManageViewModel = "com.payment.app.ui.card.CardManageViewModel";
 
-      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
+      static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
 
       static String com_payment_app_ui_calendar_CalendarViewModel = "com.payment.app.ui.calendar.CalendarViewModel";
+
+      static String com_payment_app_ui_home_HomeViewModel = "com.payment.app.ui.home.HomeViewModel";
+
+      static String com_payment_app_ui_notification_NotificationSettingsViewModel = "com.payment.app.ui.notification.NotificationSettingsViewModel";
+
+      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
 
       static String com_payment_app_ui_account_AccountManageViewModel = "com.payment.app.ui.account.AccountManageViewModel";
 
@@ -483,25 +518,25 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       AnalyticsViewModel com_payment_app_ui_analytics_AnalyticsViewModel2;
 
       @KeepFieldType
-      NotificationSettingsViewModel com_payment_app_ui_notification_NotificationSettingsViewModel2;
-
-      @KeepFieldType
       SubscriptionViewModel com_payment_app_ui_subscription_SubscriptionViewModel2;
-
-      @KeepFieldType
-      InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
-
-      @KeepFieldType
-      HomeViewModel com_payment_app_ui_home_HomeViewModel2;
 
       @KeepFieldType
       CardManageViewModel com_payment_app_ui_card_CardManageViewModel2;
 
       @KeepFieldType
-      ListViewModel com_payment_app_ui_list_ListViewModel2;
+      InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
 
       @KeepFieldType
       CalendarViewModel com_payment_app_ui_calendar_CalendarViewModel2;
+
+      @KeepFieldType
+      HomeViewModel com_payment_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      NotificationSettingsViewModel com_payment_app_ui_notification_NotificationSettingsViewModel2;
+
+      @KeepFieldType
+      ListViewModel com_payment_app_ui_list_ListViewModel2;
 
       @KeepFieldType
       AccountManageViewModel com_payment_app_ui_account_AccountManageViewModel2;
@@ -564,6 +599,10 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       return new MarkAllPaidUseCase(singletonCImpl.paymentRepositoryProvider.get(), singletonCImpl.widgetUpdaterProvider.get());
     }
 
+    private ApplyPreviousMonthTemplateUseCase applyPreviousMonthTemplateUseCase() {
+      return new ApplyPreviousMonthTemplateUseCase(singletonCImpl.paymentRepositoryProvider.get(), singletonCImpl.widgetUpdaterProvider.get());
+    }
+
     private UpdateBudgetUseCase updateBudgetUseCase() {
       return new UpdateBudgetUseCase(singletonCImpl.paymentRepositoryProvider.get());
     }
@@ -580,12 +619,24 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       return new ResetMonthAmountsUseCase(singletonCImpl.paymentRepositoryProvider.get(), singletonCImpl.widgetUpdaterProvider.get());
     }
 
-    private UpdatePaymentAmountUseCase updatePaymentAmountUseCase() {
-      return new UpdatePaymentAmountUseCase(singletonCImpl.paymentRepositoryProvider.get(), singletonCImpl.widgetUpdaterProvider.get());
+    private RecognizeAmountFromImageUseCase recognizeAmountFromImageUseCase() {
+      return new RecognizeAmountFromImageUseCase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
     }
 
-    private UpdatePaymentPaidUseCase updatePaymentPaidUseCase() {
-      return new UpdatePaymentPaidUseCase(singletonCImpl.paymentRepositoryProvider.get(), singletonCImpl.widgetUpdaterProvider.get());
+    private GetOcrProfilesJsonUseCase getOcrProfilesJsonUseCase() {
+      return new GetOcrProfilesJsonUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private SetOcrProfilesJsonUseCase setOcrProfilesJsonUseCase() {
+      return new SetOcrProfilesJsonUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private UpdateCardCategoryUseCase updateCardCategoryUseCase() {
+      return new UpdateCardCategoryUseCase(singletonCImpl.paymentRepositoryProvider.get());
+    }
+
+    private UpdatePaymentAmountUseCase updatePaymentAmountUseCase() {
+      return new UpdatePaymentAmountUseCase(singletonCImpl.paymentRepositoryProvider.get(), singletonCImpl.widgetUpdaterProvider.get());
     }
 
     private UpdatePaymentAccountUseCase updatePaymentAccountUseCase() {
@@ -612,6 +663,34 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       return new GetLockEnabledUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
     }
 
+    private GetPinHashUseCase getPinHashUseCase() {
+      return new GetPinHashUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private GetUnlockGraceEnabledUseCase getUnlockGraceEnabledUseCase() {
+      return new GetUnlockGraceEnabledUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private GetDriveAccessTokenUseCase getDriveAccessTokenUseCase() {
+      return new GetDriveAccessTokenUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private GetDriveFolderIdUseCase getDriveFolderIdUseCase() {
+      return new GetDriveFolderIdUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private GetDriveGroupNameUseCase getDriveGroupNameUseCase() {
+      return new GetDriveGroupNameUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private GetSyncAccountEmailUseCase getSyncAccountEmailUseCase() {
+      return new GetSyncAccountEmailUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private GetCloudSyncPrefsUseCase getCloudSyncPrefsUseCase() {
+      return new GetCloudSyncPrefsUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
     private SetThemeModeUseCase setThemeModeUseCase() {
       return new SetThemeModeUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
     }
@@ -624,8 +703,48 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       return new SetLockEnabledUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
     }
 
+    private SetPinHashUseCase setPinHashUseCase() {
+      return new SetPinHashUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private ClearPinHashUseCase clearPinHashUseCase() {
+      return new ClearPinHashUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private SetUnlockGraceEnabledUseCase setUnlockGraceEnabledUseCase() {
+      return new SetUnlockGraceEnabledUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private SetDriveAccessTokenUseCase setDriveAccessTokenUseCase() {
+      return new SetDriveAccessTokenUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private SetDriveFolderIdUseCase setDriveFolderIdUseCase() {
+      return new SetDriveFolderIdUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private SetDriveGroupNameUseCase setDriveGroupNameUseCase() {
+      return new SetDriveGroupNameUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private SetSyncAccountEmailUseCase setSyncAccountEmailUseCase() {
+      return new SetSyncAccountEmailUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private SetCloudSyncEnabledUseCase setCloudSyncEnabledUseCase() {
+      return new SetCloudSyncEnabledUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
+    private SetCloudLastSyncUseCase setCloudLastSyncUseCase() {
+      return new SetCloudLastSyncUseCase(singletonCImpl.provideSettingsDataStoreProvider.get());
+    }
+
     private UpsertNotificationSettingUseCase upsertNotificationSettingUseCase() {
       return new UpsertNotificationSettingUseCase(singletonCImpl.paymentRepositoryProvider.get());
+    }
+
+    private UpsertSharedBackupToDriveUseCase upsertSharedBackupToDriveUseCase() {
+      return new UpsertSharedBackupToDriveUseCase(new UploadBackupToDriveUseCase());
     }
 
     private GetSubscriptionsUseCase getSubscriptionsUseCase() {
@@ -671,37 +790,37 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_payment_app_ui_analytics_YearlySummaryViewModel = "com.payment.app.ui.analytics.YearlySummaryViewModel";
+      static String com_payment_app_ui_subscription_SubscriptionViewModel = "com.payment.app.ui.subscription.SubscriptionViewModel";
+
+      static String com_payment_app_ui_calendar_CalendarViewModel = "com.payment.app.ui.calendar.CalendarViewModel";
+
+      static String com_payment_app_ui_home_HomeViewModel = "com.payment.app.ui.home.HomeViewModel";
 
       static String com_payment_app_ui_account_AccountManageViewModel = "com.payment.app.ui.account.AccountManageViewModel";
-
-      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
-
-      static String com_payment_app_ui_analytics_AnalyticsViewModel = "com.payment.app.ui.analytics.AnalyticsViewModel";
 
       static String com_payment_app_ui_card_CardManageViewModel = "com.payment.app.ui.card.CardManageViewModel";
 
       static String com_payment_app_ui_notification_NotificationSettingsViewModel = "com.payment.app.ui.notification.NotificationSettingsViewModel";
 
-      static String com_payment_app_ui_calendar_CalendarViewModel = "com.payment.app.ui.calendar.CalendarViewModel";
-
-      static String com_payment_app_ui_subscription_SubscriptionViewModel = "com.payment.app.ui.subscription.SubscriptionViewModel";
+      static String com_payment_app_ui_analytics_AnalyticsViewModel = "com.payment.app.ui.analytics.AnalyticsViewModel";
 
       static String com_payment_app_ui_input_InputFlowViewModel = "com.payment.app.ui.input.InputFlowViewModel";
 
-      static String com_payment_app_ui_home_HomeViewModel = "com.payment.app.ui.home.HomeViewModel";
+      static String com_payment_app_ui_analytics_YearlySummaryViewModel = "com.payment.app.ui.analytics.YearlySummaryViewModel";
+
+      static String com_payment_app_ui_list_ListViewModel = "com.payment.app.ui.list.ListViewModel";
 
       @KeepFieldType
-      YearlySummaryViewModel com_payment_app_ui_analytics_YearlySummaryViewModel2;
+      SubscriptionViewModel com_payment_app_ui_subscription_SubscriptionViewModel2;
+
+      @KeepFieldType
+      CalendarViewModel com_payment_app_ui_calendar_CalendarViewModel2;
+
+      @KeepFieldType
+      HomeViewModel com_payment_app_ui_home_HomeViewModel2;
 
       @KeepFieldType
       AccountManageViewModel com_payment_app_ui_account_AccountManageViewModel2;
-
-      @KeepFieldType
-      ListViewModel com_payment_app_ui_list_ListViewModel2;
-
-      @KeepFieldType
-      AnalyticsViewModel com_payment_app_ui_analytics_AnalyticsViewModel2;
 
       @KeepFieldType
       CardManageViewModel com_payment_app_ui_card_CardManageViewModel2;
@@ -710,16 +829,16 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       NotificationSettingsViewModel com_payment_app_ui_notification_NotificationSettingsViewModel2;
 
       @KeepFieldType
-      CalendarViewModel com_payment_app_ui_calendar_CalendarViewModel2;
-
-      @KeepFieldType
-      SubscriptionViewModel com_payment_app_ui_subscription_SubscriptionViewModel2;
+      AnalyticsViewModel com_payment_app_ui_analytics_AnalyticsViewModel2;
 
       @KeepFieldType
       InputFlowViewModel com_payment_app_ui_input_InputFlowViewModel2;
 
       @KeepFieldType
-      HomeViewModel com_payment_app_ui_home_HomeViewModel2;
+      YearlySummaryViewModel com_payment_app_ui_analytics_YearlySummaryViewModel2;
+
+      @KeepFieldType
+      ListViewModel com_payment_app_ui_list_ListViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -756,16 +875,16 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
           return (T) new CardManageViewModel(singletonCImpl.paymentRepositoryProvider.get());
 
           case 4: // com.payment.app.ui.home.HomeViewModel 
-          return (T) new HomeViewModel(viewModelCImpl.getMonthlyPaymentsUseCase(), viewModelCImpl.getBudgetUseCase(), viewModelCImpl.markAllPaidUseCase(), viewModelCImpl.updateBudgetUseCase(), viewModelCImpl.exportPaymentsUseCase(), viewModelCImpl.exportBackupJsonUseCase(), new UploadBackupToDriveUseCase(), viewModelCImpl.getMonthlyPaymentsOnceUseCase(), viewModelCImpl.resetMonthAmountsUseCase(), singletonCImpl.paymentRepositoryProvider.get(), singletonCImpl.reminderSchedulerProvider.get());
+          return (T) new HomeViewModel(viewModelCImpl.getMonthlyPaymentsUseCase(), viewModelCImpl.getBudgetUseCase(), viewModelCImpl.markAllPaidUseCase(), viewModelCImpl.applyPreviousMonthTemplateUseCase(), viewModelCImpl.updateBudgetUseCase(), viewModelCImpl.exportPaymentsUseCase(), viewModelCImpl.exportBackupJsonUseCase(), new UploadBackupToDriveUseCase(), viewModelCImpl.getMonthlyPaymentsOnceUseCase(), viewModelCImpl.resetMonthAmountsUseCase(), singletonCImpl.paymentRepositoryProvider.get(), singletonCImpl.reminderSchedulerProvider.get());
 
           case 5: // com.payment.app.ui.input.InputFlowViewModel 
-          return (T) new InputFlowViewModel(singletonCImpl.paymentRepositoryProvider.get(), viewModelCImpl.getMonthlyPaymentsOnceUseCase(), viewModelCImpl.updatePaymentAmountUseCase(), viewModelCImpl.updatePaymentPaidUseCase(), viewModelCImpl.updatePaymentAccountUseCase());
+          return (T) new InputFlowViewModel(singletonCImpl.paymentRepositoryProvider.get(), viewModelCImpl.getMonthlyPaymentsOnceUseCase(), viewModelCImpl.recognizeAmountFromImageUseCase(), viewModelCImpl.getOcrProfilesJsonUseCase(), viewModelCImpl.setOcrProfilesJsonUseCase(), viewModelCImpl.updateCardCategoryUseCase(), viewModelCImpl.updatePaymentAmountUseCase(), singletonCImpl.updatePaymentPaidUseCase(), viewModelCImpl.updatePaymentAccountUseCase());
 
           case 6: // com.payment.app.ui.list.ListViewModel 
-          return (T) new ListViewModel(viewModelCImpl.getMonthlyPaymentsUseCase(), viewModelCImpl.deletePaymentUseCase(), viewModelCImpl.updatePaymentAmountUseCase(), viewModelCImpl.updatePaymentPaidUseCase(), viewModelCImpl.updatePaymentAccountUseCase(), singletonCImpl.paymentRepositoryProvider.get());
+          return (T) new ListViewModel(viewModelCImpl.getMonthlyPaymentsUseCase(), viewModelCImpl.deletePaymentUseCase(), viewModelCImpl.updatePaymentAmountUseCase(), singletonCImpl.updatePaymentPaidUseCase(), viewModelCImpl.updatePaymentAccountUseCase(), singletonCImpl.paymentRepositoryProvider.get());
 
           case 7: // com.payment.app.ui.notification.NotificationSettingsViewModel 
-          return (T) new NotificationSettingsViewModel(viewModelCImpl.getNotificationSettingsUseCase(), viewModelCImpl.getThemeModeUseCase(), viewModelCImpl.getThemeAccentUseCase(), viewModelCImpl.getLockEnabledUseCase(), viewModelCImpl.setThemeModeUseCase(), viewModelCImpl.setThemeAccentUseCase(), viewModelCImpl.setLockEnabledUseCase(), viewModelCImpl.upsertNotificationSettingUseCase(), singletonCImpl.reminderSchedulerProvider.get());
+          return (T) new NotificationSettingsViewModel(viewModelCImpl.getNotificationSettingsUseCase(), viewModelCImpl.getThemeModeUseCase(), viewModelCImpl.getThemeAccentUseCase(), viewModelCImpl.getLockEnabledUseCase(), viewModelCImpl.getPinHashUseCase(), viewModelCImpl.getUnlockGraceEnabledUseCase(), viewModelCImpl.getDriveAccessTokenUseCase(), viewModelCImpl.getDriveFolderIdUseCase(), viewModelCImpl.getDriveGroupNameUseCase(), viewModelCImpl.getSyncAccountEmailUseCase(), viewModelCImpl.getCloudSyncPrefsUseCase(), viewModelCImpl.setThemeModeUseCase(), viewModelCImpl.setThemeAccentUseCase(), viewModelCImpl.setLockEnabledUseCase(), viewModelCImpl.setPinHashUseCase(), viewModelCImpl.clearPinHashUseCase(), viewModelCImpl.setUnlockGraceEnabledUseCase(), viewModelCImpl.setDriveAccessTokenUseCase(), viewModelCImpl.setDriveFolderIdUseCase(), viewModelCImpl.setDriveGroupNameUseCase(), viewModelCImpl.setSyncAccountEmailUseCase(), viewModelCImpl.setCloudSyncEnabledUseCase(), viewModelCImpl.setCloudLastSyncUseCase(), viewModelCImpl.upsertNotificationSettingUseCase(), viewModelCImpl.exportBackupJsonUseCase(), singletonCImpl.importBackupJsonUseCase(), new CreateDriveFolderUseCase(), new InviteDriveMemberUseCase(), new ListDriveMembersUseCase(), new UpdateDriveMemberRoleUseCase(), new RemoveDriveMemberUseCase(), viewModelCImpl.upsertSharedBackupToDriveUseCase(), new DownloadSharedBackupFromDriveUseCase(), singletonCImpl.reminderSchedulerProvider.get());
 
           case 8: // com.payment.app.ui.subscription.SubscriptionViewModel 
           return (T) new SubscriptionViewModel(singletonCImpl.paymentRepositoryProvider.get(), viewModelCImpl.getSubscriptionsUseCase(), viewModelCImpl.getInstallmentsUseCase(), viewModelCImpl.upsertSubscriptionUseCase(), viewModelCImpl.upsertInstallmentUseCase());
@@ -883,11 +1002,15 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
 
     }
 
+    private ImportBackupJsonUseCase importBackupJsonUseCase() {
+      return new ImportBackupJsonUseCase(paymentRepositoryProvider.get());
+    }
+
     @SuppressWarnings("unchecked")
     private void initialize(final ApplicationContextModule applicationContextModuleParam) {
       this.reminderSchedulerProvider = DoubleCheck.provider(new SwitchingProvider<ReminderScheduler>(singletonCImpl, 0));
-      this.provideDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<AppDatabase>(singletonCImpl, 3));
-      this.provideCardDaoProvider = DoubleCheck.provider(new SwitchingProvider<CardDao>(singletonCImpl, 2));
+      this.provideDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<AppDatabase>(singletonCImpl, 2));
+      this.provideCardDaoProvider = DoubleCheck.provider(new SwitchingProvider<CardDao>(singletonCImpl, 3));
       this.providePaymentDaoProvider = DoubleCheck.provider(new SwitchingProvider<PaymentDao>(singletonCImpl, 4));
       this.provideAccountDaoProvider = DoubleCheck.provider(new SwitchingProvider<AccountDao>(singletonCImpl, 5));
       this.provideBudgetDaoProvider = DoubleCheck.provider(new SwitchingProvider<BudgetDao>(singletonCImpl, 6));
@@ -915,6 +1038,11 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
     }
 
     @Override
+    public UpdatePaymentPaidUseCase updatePaymentPaidUseCase() {
+      return new UpdatePaymentPaidUseCase(paymentRepositoryProvider.get(), widgetUpdaterProvider.get());
+    }
+
+    @Override
     public Set<Boolean> getDisableFragmentGetContextFix() {
       return Collections.<Boolean>emptySet();
     }
@@ -933,6 +1061,9 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
       PaymentApp_MembersInjector.injectReminderScheduler(instance, reminderSchedulerProvider.get());
       PaymentApp_MembersInjector.injectRepository(instance, paymentRepositoryProvider.get());
       PaymentApp_MembersInjector.injectWidgetUpdater(instance, widgetUpdaterProvider.get());
+      PaymentApp_MembersInjector.injectSettingsDataStore(instance, provideSettingsDataStoreProvider.get());
+      PaymentApp_MembersInjector.injectDownloadSharedBackupFromDriveUseCase(instance, new DownloadSharedBackupFromDriveUseCase());
+      PaymentApp_MembersInjector.injectImportBackupJsonUseCase(instance, importBackupJsonUseCase());
       return instance;
     }
 
@@ -954,13 +1085,13 @@ public final class DaggerPaymentApp_HiltComponents_SingletonC {
           return (T) new ReminderScheduler(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           case 1: // com.payment.app.data.repository.PaymentRepository 
-          return (T) new PaymentRepository(singletonCImpl.provideCardDaoProvider.get(), singletonCImpl.providePaymentDaoProvider.get(), singletonCImpl.provideAccountDaoProvider.get(), singletonCImpl.provideBudgetDaoProvider.get(), singletonCImpl.provideSubscriptionDaoProvider.get(), singletonCImpl.provideInstallmentDaoProvider.get(), singletonCImpl.provideNotificationSettingDaoProvider.get());
+          return (T) new PaymentRepository(singletonCImpl.provideDatabaseProvider.get(), singletonCImpl.provideCardDaoProvider.get(), singletonCImpl.providePaymentDaoProvider.get(), singletonCImpl.provideAccountDaoProvider.get(), singletonCImpl.provideBudgetDaoProvider.get(), singletonCImpl.provideSubscriptionDaoProvider.get(), singletonCImpl.provideInstallmentDaoProvider.get(), singletonCImpl.provideNotificationSettingDaoProvider.get());
 
-          case 2: // com.payment.app.data.db.CardDao 
-          return (T) AppModule_ProvideCardDaoFactory.provideCardDao(singletonCImpl.provideDatabaseProvider.get());
-
-          case 3: // com.payment.app.data.db.AppDatabase 
+          case 2: // com.payment.app.data.db.AppDatabase 
           return (T) AppModule_ProvideDatabaseFactory.provideDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+
+          case 3: // com.payment.app.data.db.CardDao 
+          return (T) AppModule_ProvideCardDaoFactory.provideCardDao(singletonCImpl.provideDatabaseProvider.get());
 
           case 4: // com.payment.app.data.db.PaymentDao 
           return (T) AppModule_ProvidePaymentDaoFactory.providePaymentDao(singletonCImpl.provideDatabaseProvider.get());

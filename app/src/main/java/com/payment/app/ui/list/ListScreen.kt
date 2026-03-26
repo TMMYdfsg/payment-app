@@ -61,6 +61,7 @@ import com.payment.app.util.parseYearMonth
 @Composable
 fun ListScreen(
     yearMonth: String?,
+    filter: String?,
     onNavigateBack: () -> Unit,
     onNavigateToAccountManage: () -> Unit,
     viewModel: ListViewModel = hiltViewModel()
@@ -68,9 +69,21 @@ fun ListScreen(
     val uiState by viewModel.uiState.collectAsState()
     var editingCard by remember { mutableStateOf<CardWithPayment?>(null) }
     var editAmount by remember { mutableStateOf("") }
+    var showBulkAccountDialog by remember { mutableStateOf(false) }
+    var bulkAccountId by remember { mutableStateOf<Long?>(null) }
+
+    val visibleCards = uiState.cardsByDueDate.values.flatten().filter {
+        uiState.searchQuery.isBlank() ||
+            it.cardName.contains(uiState.searchQuery, ignoreCase = true) ||
+            it.category.contains(uiState.searchQuery, ignoreCase = true) ||
+            (it.accountName ?: "").contains(uiState.searchQuery, ignoreCase = true)
+    }
 
     LaunchedEffect(yearMonth) {
         viewModel.setYearMonth(yearMonth)
+    }
+    LaunchedEffect(filter) {
+        viewModel.setFilter(filter)
     }
 
     editingCard?.let { card ->
@@ -98,6 +111,44 @@ fun ListScreen(
             },
             dismissButton = {
                 TextButton(onClick = { editingCard = null }) {
+                    Text("キャンセル")
+                }
+            }
+        )
+    }
+
+    if (showBulkAccountDialog) {
+        AlertDialog(
+            onDismissRequest = { showBulkAccountDialog = false },
+            title = { Text("表示中の口座を一括変更") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "対象 ${visibleCards.size}件",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    AccountSelector(
+                        accounts = uiState.accounts,
+                        selectedAccountId = bulkAccountId,
+                        selectedLabel = uiState.accounts.firstOrNull { it.accountId == bulkAccountId }?.accountName,
+                        onSelected = { bulkAccountId = it }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.updateVisibleAccount(bulkAccountId)
+                        showBulkAccountDialog = false
+                    },
+                    enabled = bulkAccountId != null
+                ) {
+                    Text("適用")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showBulkAccountDialog = false }) {
                     Text("キャンセル")
                 }
             }
@@ -167,6 +218,17 @@ fun ListScreen(
                 )
             }
 
+            if (uiState.showUnpaidOnly) {
+                item {
+                    Text(
+                        "未完了のみ表示中",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
             item {
                 AnimatedContent(
                     targetState = uiState.totalAmount to uiState.unpaidAmount,
@@ -183,6 +245,31 @@ fun ListScreen(
                             value = formatCurrency(unpaidAmount),
                             modifier = Modifier.weight(1f)
                         )
+                    }
+                }
+            }
+
+            if (uiState.unpaidAmount > 0L) {
+                item {
+                    Button(
+                        onClick = viewModel::markVisibleUnpaidAsPaid,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("表示中の未完了を一括完了")
+                    }
+                }
+            }
+
+            if (visibleCards.isNotEmpty() && uiState.accounts.isNotEmpty()) {
+                item {
+                    Button(
+                        onClick = {
+                            bulkAccountId = visibleCards.firstOrNull()?.accountId ?: uiState.accounts.firstOrNull()?.accountId
+                            showBulkAccountDialog = true
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("表示中の口座を一括変更")
                     }
                 }
             }

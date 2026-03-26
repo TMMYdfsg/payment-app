@@ -25,6 +25,9 @@ interface PaymentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdatePayment(payment: PaymentEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdatePayments(payments: List<PaymentEntity>)
+
     @Query("DELETE FROM payments WHERE cardId = :cardId AND yearMonth = :yearMonth")
     suspend fun deleteByCardAndMonth(cardId: Long, yearMonth: String)
 
@@ -79,4 +82,7 @@ interface PaymentDao {
         """
     )
     suspend fun markAllPaid(yearMonth: String, completedAt: Long = System.currentTimeMillis())
+
+    @Query("DELETE FROM payments")
+    suspend fun clearAll()
 }

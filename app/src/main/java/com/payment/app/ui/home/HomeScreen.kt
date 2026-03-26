@@ -60,6 +60,7 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.payment.app.data.model.CardWithPayment
 import com.payment.app.ui.components.formatCurrency
+import com.payment.app.util.asDisplayLabel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +68,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     onNavigateToInput: (Int?, String) -> Unit,
     onNavigateToList: (String) -> Unit,
+    onNavigateToUnpaidList: (String) -> Unit,
     onNavigateToCardManage: () -> Unit,
     onNavigateToAccountManage: () -> Unit,
     onNavigateToAnalytics: (String) -> Unit,
@@ -280,6 +282,71 @@ fun HomeScreen(
                         onClick = { viewModel.markAllPaid() },
                         modifier = Modifier.weight(1f)
                     ) { Text("今月を一括完了") }
+                }
+            }
+
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = {
+                            scope.launch {
+                                val applied = viewModel.applyPreviousMonthTemplate()
+                                exportMessage = if (applied > 0) {
+                                    "固定費テンプレを適用しました（${applied}件）"
+                                } else {
+                                    "適用できるテンプレがありませんでした"
+                                }
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) { Text("固定費テンプレ適用") }
+                    OutlinedButton(
+                        onClick = { onNavigateToUnpaidList(uiState.selectedYearMonth) },
+                        modifier = Modifier.weight(1f)
+                    ) { Text("未完了一覧") }
+                }
+            }
+
+            if (uiState.nextActions.isNotEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(14.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text("次アクション", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            if (uiState.overdueActionCount > 0) {
+                                Text(
+                                    "期限超過 ${uiState.overdueActionCount}件",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                            uiState.nextActions.forEach { action ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onNavigateToInput(action.dueDate, uiState.selectedYearMonth) },
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column {
+                                        Text(action.cardName, fontWeight = FontWeight.SemiBold)
+                                        Text(
+                                            "予定日 ${action.scheduledDate.asDisplayLabel()}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Text(formatCurrency(action.amount), fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

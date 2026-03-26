@@ -37,6 +37,8 @@ public final class NotificationSettingDao_Impl implements NotificationSettingDao
 
   private final SharedSQLiteStatement __preparedStmtOfDeleteOthers;
 
+  private final SharedSQLiteStatement __preparedStmtOfClearAll;
+
   public NotificationSettingDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfNotificationSettingEntity = new EntityInsertionAdapter<NotificationSettingEntity>(__db) {
@@ -62,6 +64,14 @@ public final class NotificationSettingDao_Impl implements NotificationSettingDao
       @NonNull
       public String createQuery() {
         final String _query = "DELETE FROM notification_settings WHERE id != ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfClearAll = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM notification_settings";
         return _query;
       }
     };
@@ -106,6 +116,29 @@ public final class NotificationSettingDao_Impl implements NotificationSettingDao
           }
         } finally {
           __preparedStmtOfDeleteOthers.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object clearAll(final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfClearAll.acquire();
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfClearAll.release(_stmt);
         }
       }
     }, $completion);

@@ -8,6 +8,7 @@ import androidx.room.EntityDeletionOrUpdateAdapter;
 import androidx.room.EntityInsertionAdapter;
 import androidx.room.RoomDatabase;
 import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
 import androidx.room.util.CursorUtil;
 import androidx.room.util.DBUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
@@ -36,7 +37,13 @@ public final class CardDao_Impl implements CardDao {
 
   private final EntityInsertionAdapter<CardEntity> __insertionAdapterOfCardEntity;
 
+  private final EntityInsertionAdapter<CardEntity> __insertionAdapterOfCardEntity_1;
+
   private final EntityDeletionOrUpdateAdapter<CardEntity> __deletionAdapterOfCardEntity;
+
+  private final SharedSQLiteStatement __preparedStmtOfUpdateCategory;
+
+  private final SharedSQLiteStatement __preparedStmtOfClearAll;
 
   public CardDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -45,6 +52,24 @@ public final class CardDao_Impl implements CardDao {
       @NonNull
       protected String createQuery() {
         return "INSERT OR ABORT INTO `cards` (`cardId`,`cardName`,`dueDate`,`category`,`rewardRate`,`annualFee`) VALUES (nullif(?, 0),?,?,?,?,?)";
+      }
+
+      @Override
+      protected void bind(@NonNull final SupportSQLiteStatement statement,
+          @NonNull final CardEntity entity) {
+        statement.bindLong(1, entity.getCardId());
+        statement.bindString(2, entity.getCardName());
+        statement.bindLong(3, entity.getDueDate());
+        statement.bindString(4, entity.getCategory());
+        statement.bindDouble(5, entity.getRewardRate());
+        statement.bindLong(6, entity.getAnnualFee());
+      }
+    };
+    this.__insertionAdapterOfCardEntity_1 = new EntityInsertionAdapter<CardEntity>(__db) {
+      @Override
+      @NonNull
+      protected String createQuery() {
+        return "INSERT OR REPLACE INTO `cards` (`cardId`,`cardName`,`dueDate`,`category`,`rewardRate`,`annualFee`) VALUES (nullif(?, 0),?,?,?,?,?)";
       }
 
       @Override
@@ -69,6 +94,22 @@ public final class CardDao_Impl implements CardDao {
       protected void bind(@NonNull final SupportSQLiteStatement statement,
           @NonNull final CardEntity entity) {
         statement.bindLong(1, entity.getCardId());
+      }
+    };
+    this.__preparedStmtOfUpdateCategory = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE cards SET category = ? WHERE cardId = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfClearAll = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM cards";
+        return _query;
       }
     };
   }
@@ -111,6 +152,25 @@ public final class CardDao_Impl implements CardDao {
   }
 
   @Override
+  public Object insertCardsReplace(final List<CardEntity> cards,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        __db.beginTransaction();
+        try {
+          __insertionAdapterOfCardEntity_1.insert(cards);
+          __db.setTransactionSuccessful();
+          return Unit.INSTANCE;
+        } finally {
+          __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Object deleteCard(final CardEntity card, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
@@ -123,6 +183,57 @@ public final class CardDao_Impl implements CardDao {
           return Unit.INSTANCE;
         } finally {
           __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object updateCategory(final long cardId, final String category,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateCategory.acquire();
+        int _argIndex = 1;
+        _stmt.bindString(_argIndex, category);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, cardId);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfUpdateCategory.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object clearAll(final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfClearAll.acquire();
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfClearAll.release(_stmt);
         }
       }
     }, $completion);

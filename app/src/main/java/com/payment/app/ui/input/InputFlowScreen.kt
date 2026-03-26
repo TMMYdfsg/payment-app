@@ -1,5 +1,10 @@
 package com.payment.app.ui.input
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,12 +18,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -29,12 +37,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -60,12 +72,40 @@ fun InputFlowScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val month = parseYearMonth(yearMonth)
+    val snackbarHostState = remember { SnackbarHostState() }
+    val screenshotLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            viewModel.importAmountFromScreenshot(uri)
+        }
+    }
+    val voiceInputLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode != Activity.RESULT_OK) return@rememberLauncherForActivityResult
+        val text = result.data
+            ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            ?.firstOrNull()
+            .orEmpty()
+        if (text.isNotBlank()) {
+            viewModel.applyVoiceInput(text)
+        }
+    }
 
     LaunchedEffect(dueDate, yearMonth) {
         viewModel.initializeForDueDate(dueDate, yearMonth)
     }
 
+    LaunchedEffect(uiState.recognizedMessage) {
+        uiState.recognizedMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearRecognizedMessage()
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -117,10 +157,23 @@ fun InputFlowScreen(
                         currentIndex = uiState.currentIndex,
                         totalCards = uiState.cards.size,
                         inputText = uiState.inputText,
+                        isRecognizing = uiState.isRecognizing,
                         onInputChange = viewModel::onInputChange,
                         onConfirm = viewModel::onConfirm,
                         onSkip = viewModel::onSkip,
                         onTogglePaid = viewModel::toggleCurrentPaid,
+                        onImportScreenshot = { screenshotLauncher.launch("image/*") },
+                        onStartVoiceInput = {
+                            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                                putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ja-JP")
+                                putExtra(RecognizerIntent.EXTRA_PROMPT, "金額を話してください")
+                            }
+                            runCatching { voiceInputLauncher.launch(intent) }
+                                .onFailure {
+                                    viewModel.applyVoiceInput("")
+                                }
+                        },
                         accountSelector = {
                             AccountSelector(
                                 accounts = uiState.accounts,
@@ -137,6 +190,38 @@ fun InputFlowScreen(
             }
         }
     }
+
+    if (uiState.showOcrCandidateDialog && uiState.ocrCandidates.isNotEmpty()) {
+        AlertDialog(
+            onDismissRequest = viewModel::dismissOcrCandidateDialog,
+            title = { Text("OCR候補を選択") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("認識された金額候補から選択してください。")
+                    uiState.ocrCandidates.forEach { candidate ->
+                        OutlinedButton(
+                            onClick = { viewModel.selectOcrCandidate(candidate) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(formatCurrency(candidate))
+                        }
+                    }
+                    if (!uiState.ocrSavedImagePath.isNullOrBlank()) {
+                        Text(
+                            "保存先: ${uiState.ocrSavedImagePath}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = viewModel::dismissOcrCandidateDialog) {
+                    Text("閉じる")
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -146,10 +231,13 @@ private fun InputContent(
     currentIndex: Int,
     totalCards: Int,
     inputText: String,
+    isRecognizing: Boolean,
     onInputChange: (String) -> Unit,
     onConfirm: () -> Unit,
     onSkip: () -> Unit,
     onTogglePaid: () -> Unit,
+    onImportScreenshot: () -> Unit,
+    onStartVoiceInput: () -> Unit,
     accountSelector: @Composable (() -> Unit),
     modifier: Modifier = Modifier
 ) {
@@ -219,6 +307,29 @@ private fun InputContent(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
+
+        OutlinedButton(
+            onClick = onImportScreenshot,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isRecognizing
+        ) {
+            Icon(Icons.Default.ImageSearch, contentDescription = null)
+            Text(
+                if (isRecognizing) "OCR解析中..." else "スクショから自動入力",
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+        OutlinedButton(
+            onClick = onStartVoiceInput,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isRecognizing
+        ) {
+            Icon(Icons.Default.Mic, contentDescription = null)
+            Text(
+                "音声で金額入力",
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
 
         if (accountsCount > 0) {
             accountSelector()

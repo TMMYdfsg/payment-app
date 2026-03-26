@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.payment.app-mergeDebugResources-75:/values-v29/values-v29.xml",
+            "outputFile": "com.payment.app-mergeDebugResources-78:/values-v29/values-v29.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\fff74eb99b0c7f2716c23b208b9784e3\\transformed\\glance-appwidget-1.1.1\\res\\values-v29\\values-v29.xml",
+                    "source": "C:\\Users\\tomoy\\.gradle\\caches\\8.9\\transforms\\615569595ebc3a8af2de053f3002518d\\transformed\\glance-appwidget-1.1.1\\res\\values-v29\\values-v29.xml",
                     "from": {
                         "startLines": "2,5,19,22,25,26,27",
                         "startColumns": "4,4,4,4,4,4,4",

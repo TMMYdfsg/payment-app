@@ -3,6 +3,7 @@ package com.payment.app.data.db
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.payment.app.data.db.entity.BankAccountEntity
 import kotlinx.coroutines.flow.Flow
@@ -21,9 +22,15 @@ interface AccountDao {
     @Insert
     suspend fun insertAccount(account: BankAccountEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAccounts(accounts: List<BankAccountEntity>)
+
     @Delete
     suspend fun deleteAccount(account: BankAccountEntity)
 
     @Query("SELECT COUNT(*) FROM bank_accounts")
     suspend fun getAccountCount(): Int
+
+    @Query("DELETE FROM bank_accounts")
+    suspend fun clearAll()
 }

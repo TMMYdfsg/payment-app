@@ -35,6 +35,7 @@ data class ListUiState(
     val totalAmount: Long = 0L,
     val paidAmount: Long = 0L,
     val unpaidAmount: Long = 0L,
+    val showUnpaidOnly: Boolean = false,
     val searchQuery: String = "",
     val historyResults: List<PaymentHistoryItem> = emptyList(),
     val isLoading: Boolean = true
@@ -52,17 +53,20 @@ class ListViewModel @Inject constructor(
 
     private val selectedMonth = MutableStateFlow(currentYearMonth())
     private val searchQuery = MutableStateFlow("")
+    private val filterMode = MutableStateFlow("all")
 
     val uiState: StateFlow<ListUiState> = selectedMonth
         .flatMapLatest { yearMonth ->
             combine(
                 getMonthlyPaymentsUseCase(yearMonth.asStorageKey()),
                 repository.allAccounts,
-                searchQuery
-            ) { cards, accounts, query ->
-                val grouped = cards.groupBy { it.dueDate }
+                searchQuery,
+                filterMode
+            ) { cards, accounts, query, filter ->
+                val visibleCards = if (filter == "unpaid") cards.filter { !it.isPaid } else cards
+                val grouped = visibleCards.groupBy { it.dueDate }
                 val subtotals = grouped.mapValues { (_, list) -> list.sumOf { it.amount } }
-                val paidAmount = cards.filter { it.isPaid }.sumOf { it.amount }
+                val paidAmount = visibleCards.filter { it.isPaid }.sumOf { it.amount }
                 val results = repository.searchPaymentHistory(query)
                 ListUiState(
                     selectedYearMonth = yearMonth.asStorageKey(),
@@ -73,6 +77,7 @@ class ListViewModel @Inject constructor(
                     totalAmount = subtotals.values.sum(),
                     paidAmount = paidAmount,
                     unpaidAmount = subtotals.values.sum() - paidAmount,
+                    showUnpaidOnly = filter == "unpaid",
                     searchQuery = query,
                     historyResults = results,
                     isLoading = false
@@ -90,6 +95,10 @@ class ListViewModel @Inject constructor(
 
     fun setYearMonth(value: String?) {
         selectedMonth.value = parseYearMonth(value)
+    }
+
+    fun setFilter(filter: String?) {
+        filterMode.value = if (filter == "unpaid") "unpaid" else "all"
     }
 
     fun changeMonth(offset: Long) {
@@ -122,5 +131,37 @@ class ListViewModel @Inject constructor(
         viewModelScope.launch {
             deletePaymentUseCase(cardId, selectedMonth.value.asStorageKey())
         }
+    }
+
+    fun markVisibleUnpaidAsPaid() {
+        viewModelScope.launch {
+            val yearMonth = selectedMonth.value.asStorageKey()
+            val visibleCards = visibleCardsForBulkAction(uiState.value)
+            visibleCards.filterNot { it.isPaid }.forEach { card ->
+                updatePaymentPaidUseCase(card.cardId, yearMonth, true)
+            }
+        }
+    }
+
+    fun updateVisibleAccount(accountId: Long?) {
+        viewModelScope.launch {
+            val yearMonth = selectedMonth.value.asStorageKey()
+            visibleCardsForBulkAction(uiState.value).forEach { card ->
+                if (card.accountId != accountId) {
+                    updatePaymentAccountUseCase(card.cardId, yearMonth, accountId)
+                }
+            }
+        }
+    }
+
+    private fun visibleCardsForBulkAction(state: ListUiState): List<CardWithPayment> {
+        val query = state.searchQuery.trim()
+        return state.cardsByDueDate.values
+            .flatten()
+            .filter { card ->
+                query.isBlank() || card.cardName.contains(query, ignoreCase = true) ||
+                    card.category.contains(query, ignoreCase = true) ||
+                    (card.accountName ?: "").contains(query, ignoreCase = true)
+            }
     }
 }

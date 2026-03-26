@@ -1,2 +1,0 @@
-03-25 11:21:04.768  2659  2757 I TestRunner: started: useAppContext(com.payment.app.ExampleInstrumentedTest)
-03-25 11:21:04.770  2659  2757 I TestRunner: finished: useAppContext(com.payment.app.ExampleInstrumentedTest)

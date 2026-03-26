@@ -1,34 +1,34 @@
 [
     {
-        "merged": "com.payment.app-debug-77:/font_manrope_variable.ttf.flat",
-        "source": "com.payment.app-main-79:/font/manrope_variable.ttf"
+        "merged": "com.payment.app-debug-80:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.payment.app-main-82:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-debug-77:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-main-79:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+        "merged": "com.payment.app-debug-80:/font_manrope_variable.ttf.flat",
+        "source": "com.payment.app-main-82:/font/manrope_variable.ttf"
     },
     {
-        "merged": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-debug-77:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-main-79:\\mipmap-anydpi-v26\\ic_launcher.xml"
+        "merged": "com.payment.app-debug-80:/mipmap-hdpi_ic_launcher.xml.flat",
+        "source": "com.payment.app-main-82:/mipmap-hdpi/ic_launcher.xml"
     },
     {
-        "merged": "com.payment.app-debug-77:/font_inter_variable.ttf.flat",
-        "source": "com.payment.app-main-79:/font/inter_variable.ttf"
+        "merged": "com.payment.app-debug-80:/layout_widget_loading.xml.flat",
+        "source": "com.payment.app-main-82:/layout/widget_loading.xml"
     },
     {
-        "merged": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-debug-77:\\xml_file_paths.xml.flat",
-        "source": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-main-79:\\xml\\file_paths.xml"
+        "merged": "com.payment.app-debug-80:/font_inter_variable.ttf.flat",
+        "source": "com.payment.app-main-82:/font/inter_variable.ttf"
     },
     {
-        "merged": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-debug-77:\\layout_widget_loading.xml.flat",
-        "source": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-main-79:\\layout\\widget_loading.xml"
+        "merged": "com.payment.app-debug-80:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.payment.app-main-82:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
-        "merged": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-debug-77:\\xml_payment_summary_widget_info.xml.flat",
-        "source": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-main-79:\\xml\\payment_summary_widget_info.xml"
+        "merged": "com.payment.app-debug-80:/xml_file_paths.xml.flat",
+        "source": "com.payment.app-main-82:/xml/file_paths.xml"
     },
     {
-        "merged": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-debug-77:\\mipmap-hdpi_ic_launcher.xml.flat",
-        "source": "C:\\Users\\tomoy\\.gradle\\daemon\\8.9\\com.payment.app-main-79:\\mipmap-hdpi\\ic_launcher.xml"
+        "merged": "com.payment.app-debug-80:/xml_payment_summary_widget_info.xml.flat",
+        "source": "com.payment.app-main-82:/xml/payment_summary_widget_info.xml"
     }
 ]

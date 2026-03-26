@@ -17,4 +17,10 @@ interface InstallmentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: InstallmentEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAll(entities: List<InstallmentEntity>)
+
+    @Query("DELETE FROM installments")
+    suspend fun clearAll()
 }

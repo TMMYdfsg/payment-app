@@ -1,6 +1,7 @@
 package com.payment.app.data.repository
 
 import com.payment.app.data.db.AccountDao
+import com.payment.app.data.db.AppDatabase
 import com.payment.app.data.db.BudgetDao
 import com.payment.app.data.db.CardDao
 import com.payment.app.data.db.PaymentDao
@@ -17,13 +18,16 @@ import com.payment.app.data.db.entity.SubscriptionEntity
 import com.payment.app.data.model.CardWithPayment
 import com.payment.app.data.model.PaymentHistoryItem
 import com.payment.app.data.model.BackupSnapshot
+import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import java.time.YearMonth
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PaymentRepository @Inject constructor(
+    private val database: AppDatabase,
     private val cardDao: CardDao,
     private val paymentDao: PaymentDao,
     private val accountDao: AccountDao,
@@ -62,6 +66,10 @@ class PaymentRepository @Inject constructor(
 
     suspend fun deleteCard(card: CardEntity) {
         cardDao.deleteCard(card)
+    }
+
+    suspend fun updateCardCategory(cardId: Long, category: String) {
+        cardDao.updateCategory(cardId = cardId, category = category.trim())
     }
 
     suspend fun addAccount(accountName: String, bankName: String): Long =
@@ -131,6 +139,46 @@ class PaymentRepository @Inject constructor(
 
     suspend fun markAllPaid(yearMonth: String) {
         paymentDao.markAllPaid(yearMonth)
+    }
+
+    suspend fun applyPreviousMonthTemplate(yearMonth: String): Int {
+        val currentMonth = runCatching { YearMonth.parse(yearMonth) }.getOrNull() ?: return 0
+        val previousMonth = currentMonth.minusMonths(1).toString()
+        val currentMonthKey = currentMonth.toString()
+
+        return database.withTransaction {
+            val cards = cardDao.getAllCardsOnce()
+            val previousPayments = paymentDao.getPaymentsByMonthOnce(previousMonth).associateBy { it.cardId }
+            val currentPayments = paymentDao.getPaymentsByMonthOnce(currentMonthKey).associateBy { it.cardId }
+            val defaultAccountId = accountDao.getFirstAccountId()
+            var appliedCount = 0
+
+            cards.forEach { card ->
+                val previous = previousPayments[card.cardId] ?: return@forEach
+                if (previous.amount <= 0L) return@forEach
+                val current = currentPayments[card.cardId]
+                if (current?.amount?.let { it > 0L } == true) return@forEach
+
+                paymentDao.insertOrUpdatePayment(
+                    (current ?: PaymentEntity(
+                        cardId = card.cardId,
+                        yearMonth = currentMonthKey,
+                        accountId = previous.accountId ?: defaultAccountId
+                    )).copy(
+                        paymentId = current?.paymentId ?: 0L,
+                        cardId = card.cardId,
+                        yearMonth = currentMonthKey,
+                        amount = previous.amount,
+                        isPaid = false,
+                        accountId = current?.accountId ?: previous.accountId ?: defaultAccountId,
+                        completedAt = null,
+                        updatedAt = System.currentTimeMillis()
+                    )
+                )
+                appliedCount += 1
+            }
+            appliedCount
+        }
     }
 
     suspend fun initializeDefaultCards() {
@@ -215,6 +263,38 @@ class PaymentRepository @Inject constructor(
             installments = installmentDao.getAllInstallmentsOnce(),
             notificationSetting = notificationSettingDao.getSettingsOnce()
         )
+    }
+
+    suspend fun replaceBackupSnapshot(snapshot: BackupSnapshot) {
+        database.withTransaction {
+            installmentDao.clearAll()
+            paymentDao.clearAll()
+            subscriptionDao.clearAll()
+            budgetDao.clearAll()
+            notificationSettingDao.clearAll()
+            cardDao.clearAll()
+            accountDao.clearAll()
+
+            if (snapshot.accounts.isNotEmpty()) {
+                accountDao.insertAccounts(snapshot.accounts)
+            }
+            if (snapshot.cards.isNotEmpty()) {
+                cardDao.insertCardsReplace(snapshot.cards)
+            }
+            if (snapshot.payments.isNotEmpty()) {
+                paymentDao.insertOrUpdatePayments(snapshot.payments)
+            }
+            if (snapshot.subscriptions.isNotEmpty()) {
+                subscriptionDao.upsertAll(snapshot.subscriptions)
+            }
+            if (snapshot.installments.isNotEmpty()) {
+                installmentDao.upsertAll(snapshot.installments)
+            }
+            if (snapshot.budgets.isNotEmpty()) {
+                budgetDao.upsertBudgets(snapshot.budgets)
+            }
+            snapshot.notificationSetting?.let { notificationSettingDao.upsert(it) }
+        }
     }
 
     private suspend fun upsertMonthlyPayment(

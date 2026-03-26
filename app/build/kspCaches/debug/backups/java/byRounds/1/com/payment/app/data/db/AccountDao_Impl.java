@@ -9,6 +9,7 @@ import androidx.room.EntityDeletionOrUpdateAdapter;
 import androidx.room.EntityInsertionAdapter;
 import androidx.room.RoomDatabase;
 import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
 import androidx.room.util.CursorUtil;
 import androidx.room.util.DBUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
@@ -37,7 +38,11 @@ public final class AccountDao_Impl implements AccountDao {
 
   private final EntityInsertionAdapter<BankAccountEntity> __insertionAdapterOfBankAccountEntity;
 
+  private final EntityInsertionAdapter<BankAccountEntity> __insertionAdapterOfBankAccountEntity_1;
+
   private final EntityDeletionOrUpdateAdapter<BankAccountEntity> __deletionAdapterOfBankAccountEntity;
+
+  private final SharedSQLiteStatement __preparedStmtOfClearAll;
 
   public AccountDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -46,6 +51,21 @@ public final class AccountDao_Impl implements AccountDao {
       @NonNull
       protected String createQuery() {
         return "INSERT OR ABORT INTO `bank_accounts` (`accountId`,`accountName`,`bankName`) VALUES (nullif(?, 0),?,?)";
+      }
+
+      @Override
+      protected void bind(@NonNull final SupportSQLiteStatement statement,
+          @NonNull final BankAccountEntity entity) {
+        statement.bindLong(1, entity.getAccountId());
+        statement.bindString(2, entity.getAccountName());
+        statement.bindString(3, entity.getBankName());
+      }
+    };
+    this.__insertionAdapterOfBankAccountEntity_1 = new EntityInsertionAdapter<BankAccountEntity>(__db) {
+      @Override
+      @NonNull
+      protected String createQuery() {
+        return "INSERT OR REPLACE INTO `bank_accounts` (`accountId`,`accountName`,`bankName`) VALUES (nullif(?, 0),?,?)";
       }
 
       @Override
@@ -67,6 +87,14 @@ public final class AccountDao_Impl implements AccountDao {
       protected void bind(@NonNull final SupportSQLiteStatement statement,
           @NonNull final BankAccountEntity entity) {
         statement.bindLong(1, entity.getAccountId());
+      }
+    };
+    this.__preparedStmtOfClearAll = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM bank_accounts";
+        return _query;
       }
     };
   }
@@ -91,6 +119,25 @@ public final class AccountDao_Impl implements AccountDao {
   }
 
   @Override
+  public Object insertAccounts(final List<BankAccountEntity> accounts,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        __db.beginTransaction();
+        try {
+          __insertionAdapterOfBankAccountEntity_1.insert(accounts);
+          __db.setTransactionSuccessful();
+          return Unit.INSTANCE;
+        } finally {
+          __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Object deleteAccount(final BankAccountEntity account,
       final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
@@ -104,6 +151,29 @@ public final class AccountDao_Impl implements AccountDao {
           return Unit.INSTANCE;
         } finally {
           __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object clearAll(final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfClearAll.acquire();
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfClearAll.release(_stmt);
         }
       }
     }, $completion);

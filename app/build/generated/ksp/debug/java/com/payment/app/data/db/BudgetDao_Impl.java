@@ -8,6 +8,7 @@ import androidx.room.CoroutinesRoom;
 import androidx.room.EntityInsertionAdapter;
 import androidx.room.RoomDatabase;
 import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
 import androidx.room.util.CursorUtil;
 import androidx.room.util.DBUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.annotation.processing.Generated;
+import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
 
@@ -33,6 +35,8 @@ public final class BudgetDao_Impl implements BudgetDao {
   private final RoomDatabase __db;
 
   private final EntityInsertionAdapter<BudgetEntity> __insertionAdapterOfBudgetEntity;
+
+  private final SharedSQLiteStatement __preparedStmtOfClearAll;
 
   public BudgetDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -56,6 +60,14 @@ public final class BudgetDao_Impl implements BudgetDao {
         statement.bindLong(4, entity.getAmount());
       }
     };
+    this.__preparedStmtOfClearAll = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM budgets";
+        return _query;
+      }
+    };
   }
 
   @Override
@@ -72,6 +84,48 @@ public final class BudgetDao_Impl implements BudgetDao {
           return _result;
         } finally {
           __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object upsertBudgets(final List<BudgetEntity> budgets,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        __db.beginTransaction();
+        try {
+          __insertionAdapterOfBudgetEntity.insert(budgets);
+          __db.setTransactionSuccessful();
+          return Unit.INSTANCE;
+        } finally {
+          __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object clearAll(final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfClearAll.acquire();
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfClearAll.release(_stmt);
         }
       }
     }, $completion);

@@ -43,6 +43,8 @@ public final class PaymentDao_Impl implements PaymentDao {
 
   private final SharedSQLiteStatement __preparedStmtOfMarkAllPaid;
 
+  private final SharedSQLiteStatement __preparedStmtOfClearAll;
+
   public PaymentDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfPaymentEntity = new EntityInsertionAdapter<PaymentEntity>(__db) {
@@ -111,6 +113,14 @@ public final class PaymentDao_Impl implements PaymentDao {
         return _query;
       }
     };
+    this.__preparedStmtOfClearAll = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM payments";
+        return _query;
+      }
+    };
   }
 
   @Override
@@ -123,6 +133,25 @@ public final class PaymentDao_Impl implements PaymentDao {
         __db.beginTransaction();
         try {
           __insertionAdapterOfPaymentEntity.insert(payment);
+          __db.setTransactionSuccessful();
+          return Unit.INSTANCE;
+        } finally {
+          __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object insertOrUpdatePayments(final List<PaymentEntity> payments,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        __db.beginTransaction();
+        try {
+          __insertionAdapterOfPaymentEntity.insert(payments);
           __db.setTransactionSuccessful();
           return Unit.INSTANCE;
         } finally {
@@ -213,6 +242,29 @@ public final class PaymentDao_Impl implements PaymentDao {
           }
         } finally {
           __preparedStmtOfMarkAllPaid.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object clearAll(final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfClearAll.acquire();
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfClearAll.release(_stmt);
         }
       }
     }, $completion);

@@ -18,6 +18,9 @@ workmanager = "2.9.1"
 vico = "2.0.0-alpha.15"
 glance = "1.1.1"
 documentfile = "1.0.1"
+mlkit = "16.0.0"
+mlkitText = "16.0.0"
+playServicesAuth = "21.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +57,9 @@ vico-compose = { group = "com.patrykandpatrick.vico", name = "compose-m3", versi
 androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
 androidx-glance-material3 = { group = "androidx.glance", name = "glance-material3", version.ref = "glance" }
 androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
+mlkit-text-recognition-japanese = { group = "com.google.mlkit", name = "text-recognition-japanese", version.ref = "mlkit" }
+mlkit-text-recognition = { group = "com.google.mlkit", name = "text-recognition", version.ref = "mlkitText" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
