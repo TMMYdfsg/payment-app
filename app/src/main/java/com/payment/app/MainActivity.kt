@@ -1,9 +1,11 @@
 package com.payment.app
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -103,7 +106,11 @@ class MainActivity : FragmentActivity() {
                         AuthLockOverlay(
                             uiState = authUiState,
                             onRetry = authManager::requireAuth,
-                            onPinSubmit = { authManager.verifyPin(it) }
+                            onPinSubmit = { authManager.verifyPin(it) },
+                            onOpenSecuritySettings = ::openBiometricSettings,
+                            onDisableLockTemporarily = {
+                                lifecycleScope.launch { settingsDataStore.setLockEnabled(false) }
+                            }
                         )
                     }
                 }
@@ -137,13 +144,30 @@ class MainActivity : FragmentActivity() {
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
+
+    private fun openBiometricSettings() {
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                putExtra(
+                    Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                    android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                        android.hardware.biometrics.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                )
+            }
+        } else {
+            Intent(Settings.ACTION_SECURITY_SETTINGS)
+        }
+        runCatching { startActivity(intent) }
+    }
 }
 
 @Composable
 private fun AuthLockOverlay(
     uiState: AuthUiState,
     onRetry: () -> Unit,
-    onPinSubmit: (String) -> Unit
+    onPinSubmit: (String) -> Unit,
+    onOpenSecuritySettings: () -> Unit,
+    onDisableLockTemporarily: () -> Unit
 ) {
     var pin by remember { mutableStateOf("") }
     Box(
@@ -189,6 +213,17 @@ private fun AuthLockOverlay(
                         enabled = uiState.lockEnabled
                     ) {
                         Text(if (uiState.isBiometricAvailable) "指紋認証で解除" else "生体認証を再確認")
+                    }
+                    if (!uiState.isBiometricAvailable) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextButton(onClick = onOpenSecuritySettings) {
+                            Text("端末の生体認証設定を開く")
+                        }
+                        if (!uiState.hasPin) {
+                            TextButton(onClick = onDisableLockTemporarily) {
+                                Text("一時的にロックを無効化")
+                            }
+                        }
                     }
                 }
                 if (uiState.hasPin) {

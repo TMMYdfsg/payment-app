@@ -1,5 +1,6 @@
 package com.payment.app.security
 
+import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -26,6 +27,10 @@ class AuthManager(
 ) {
     private val strongAuthenticators = BiometricManager.Authenticators.BIOMETRIC_STRONG
     private val weakAuthenticators = BiometricManager.Authenticators.BIOMETRIC_WEAK
+    private val strongOrDeviceAuthenticators =
+        BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+    private val weakOrDeviceAuthenticators =
+        BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL
 
     private val executor = ContextCompat.getMainExecutor(activity)
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -172,30 +177,38 @@ class AuthManager(
             return
         }
 
-        when (val canAuthenticate = biometricStatus()) {
+        when (val canAuthenticate = biometricStatus(strongOrDeviceAuthenticators)) {
             BiometricManager.BIOMETRIC_SUCCESS -> {
                 authenticateWithBiometric(
-                    authenticators = strongAuthenticators,
-                    subtitle = "指紋認証でロックを解除します"
+                    authenticators = strongOrDeviceAuthenticators,
+                    subtitle = "指紋または端末ロックで解除します"
                 )
             }
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                _uiState.update {
-                    it.copy(
-                        isLocked = true,
-                        isAuthenticating = false,
-                        isBiometricAvailable = false,
-                        message = "端末に指紋が登録されていません。端末設定から指紋を登録してください。"
+                val weakStatus = biometricStatus(weakOrDeviceAuthenticators)
+                if (weakStatus == BiometricManager.BIOMETRIC_SUCCESS) {
+                    authenticateWithBiometric(
+                        authenticators = weakOrDeviceAuthenticators,
+                        subtitle = "生体認証または端末ロックで解除します"
                     )
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLocked = true,
+                            isAuthenticating = false,
+                            isBiometricAvailable = false,
+                            message = "端末に生体認証が登録されていません。端末設定から指紋を登録してください。"
+                        )
+                    }
                 }
             }
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
             BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
-                val weakStatus = biometricStatus(weakAuthenticators)
+                val weakStatus = biometricStatus(weakOrDeviceAuthenticators)
                 if (weakStatus == BiometricManager.BIOMETRIC_SUCCESS) {
                     authenticateWithBiometric(
-                        authenticators = weakAuthenticators,
-                        subtitle = "生体認証でロックを解除します"
+                        authenticators = weakOrDeviceAuthenticators,
+                        subtitle = "生体認証または端末ロックで解除します"
                     )
                 } else {
                     _uiState.update {
@@ -223,8 +236,8 @@ class AuthManager(
 
     private fun updateAvailabilityState() {
         _uiState.update {
-            val strongAvailable = biometricStatus(strongAuthenticators) == BiometricManager.BIOMETRIC_SUCCESS
-            val weakAvailable = biometricStatus(weakAuthenticators) == BiometricManager.BIOMETRIC_SUCCESS
+            val strongAvailable = biometricStatus(strongOrDeviceAuthenticators) == BiometricManager.BIOMETRIC_SUCCESS
+            val weakAvailable = biometricStatus(weakOrDeviceAuthenticators) == BiometricManager.BIOMETRIC_SUCCESS
             it.copy(isBiometricAvailable = strongAvailable || weakAvailable)
         }
     }
@@ -260,13 +273,24 @@ class AuthManager(
             )
         }
         runCatching {
+            val promptBuilder = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("ロック解除")
+                .setSubtitle(subtitle)
+                .setConfirmationRequired(false)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                promptBuilder.setAllowedAuthenticators(authenticators)
+            } else {
+                val allowDeviceCredential =
+                    authenticators and BiometricManager.Authenticators.DEVICE_CREDENTIAL != 0
+                if (allowDeviceCredential) {
+                    @Suppress("DEPRECATION")
+                    promptBuilder.setDeviceCredentialAllowed(true)
+                } else {
+                    promptBuilder.setNegativeButtonText("キャンセル")
+                }
+            }
             prompt.authenticate(
-                BiometricPrompt.PromptInfo.Builder()
-                    .setTitle("ロック解除")
-                    .setSubtitle(subtitle)
-                    .setAllowedAuthenticators(authenticators)
-                    .setConfirmationRequired(false)
-                    .build()
+                promptBuilder.build()
             )
         }.onFailure {
             _uiState.update { state ->
