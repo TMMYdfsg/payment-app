@@ -116,6 +116,11 @@ class MainActivity : FragmentActivity() {
         authManager.onAppForegrounded()
     }
 
+    override fun onStop() {
+        authManager.onAppBackgrounded()
+        super.onStop()
+    }
+
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
         setIntent(intent)

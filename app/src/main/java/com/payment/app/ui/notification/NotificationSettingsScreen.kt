@@ -61,6 +61,8 @@ import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.payment.app.domain.usecase.DriveMember
 import com.payment.app.util.exportAuditLogsToCsv
 import com.payment.app.util.exportAuditLogsToJson
@@ -82,6 +84,15 @@ fun NotificationSettingsScreen(
     val context = LocalContext.current
     val activity = context as? Activity
     val authorizationClient = remember(context) { Identity.getAuthorizationClient(context) }
+    val googleSignInClient = remember(context) {
+        GoogleSignIn.getClient(
+            context,
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestScopes(Scope(DRIVE_FILE_SCOPE))
+                .build()
+        )
+    }
 
     var enabled by remember { mutableStateOf(false) }
     var leadDays by remember { mutableStateOf("3") }
@@ -96,6 +107,7 @@ fun NotificationSettingsScreen(
     var unlockGraceEnabled by remember { mutableStateOf(true) }
     var pinInput by remember { mutableStateOf("") }
     var pendingAuthorizedAction by remember { mutableStateOf<((String, String) -> Unit)?>(null) }
+    var pendingPostSignInAction by remember { mutableStateOf<((String, String) -> Unit)?>(null) }
     var memberSearchQuery by remember { mutableStateOf("") }
     var memberRoleFilter by remember { mutableStateOf("all") }
     var pendingRemoveMember by remember { mutableStateOf<DriveMember?>(null) }
@@ -119,28 +131,82 @@ fun NotificationSettingsScreen(
         matchesQuery && matchesRole
     }
 
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val callback = pendingPostSignInAction
+        pendingPostSignInAction = null
+        if (callback == null) return@rememberLauncherForActivityResult
+        if (result.resultCode != Activity.RESULT_OK) {
+            viewModel.showSyncMessage("Googleアカウント選択をキャンセルしました")
+            return@rememberLauncherForActivityResult
+        }
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        runCatching { task.getResult(ApiException::class.java) }
+            .onSuccess { account ->
+                val request = AuthorizationRequest.Builder()
+                    .setRequestedScopes(
+                        listOf(
+                            Scope(DRIVE_FILE_SCOPE),
+                            Scope(EMAIL_SCOPE),
+                            Scope(PROFILE_SCOPE),
+                            Scope(OPENID_SCOPE)
+                        )
+                    )
+                    .build()
+                authorizationClient.authorize(request)
+                    .addOnSuccessListener { authResult ->
+                        if (authResult.hasResolution()) {
+                            viewModel.showSyncMessage("Google認可を再開します。もう一度ボタンを押してください。")
+                            return@addOnSuccessListener
+                        }
+                        handleAuthorizationResult(
+                            authorizationResult = authResult,
+                            fallbackEmail = account.email.orEmpty(),
+                            onAuthorized = callback,
+                            onError = viewModel::showSyncMessage
+                        )
+                    }
+                    .addOnFailureListener { error ->
+                        val message = (error as? ApiException)?.localizedMessage ?: error.message.orEmpty()
+                        viewModel.showSyncMessage("Google再認可に失敗しました: $message")
+                    }
+            }
+            .onFailure { error ->
+                val message = (error as? ApiException)?.localizedMessage ?: error.message.orEmpty()
+                viewModel.showSyncMessage("Googleサインインに失敗しました: $message")
+            }
+    }
     val authorizationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         val callback = pendingAuthorizedAction
         pendingAuthorizedAction = null
         if (callback == null) return@rememberLauncherForActivityResult
-        if (result.resultCode != Activity.RESULT_OK) {
-            viewModel.showSyncMessage("Google認証をキャンセルしました")
-            return@rememberLauncherForActivityResult
-        }
-        runCatching { authorizationClient.getAuthorizationResultFromIntent(result.data) }
+        val parsed = runCatching { authorizationClient.getAuthorizationResultFromIntent(result.data) }
+        parsed
             .onSuccess { authResult ->
                 handleAuthorizationResult(
                     authorizationResult = authResult,
-                    fallbackEmail = uiState.syncAccountEmail,
+                    fallbackEmail = uiState.syncAccountEmail.ifBlank {
+                        GoogleSignIn.getLastSignedInAccount(context)?.email.orEmpty()
+                    },
                     onAuthorized = callback,
                     onError = viewModel::showSyncMessage
                 )
             }
-            .onFailure {
-                val message = (it as? ApiException)?.localizedMessage ?: it.message.orEmpty()
-                viewModel.showSyncMessage("Google認証に失敗しました: $message")
+            .onFailure { error ->
+                // 一部端末では認可画面がRESULT_CANCELEDを返すことがあるため、アカウント選択へフォールバック
+                if (result.resultCode == Activity.RESULT_CANCELED && activity != null) {
+                    pendingPostSignInAction = callback
+                    googleSignInClient.signOut()
+                        .addOnCompleteListener {
+                            googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                        }
+                } else {
+                    val message = (error as? ApiException)?.localizedMessage ?: error.message.orEmpty()
+                    viewModel.showSyncMessage("Google認証に失敗しました: $message")
+                }
             }
     }
 

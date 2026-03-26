@@ -4,6 +4,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -145,9 +146,25 @@ class AuthManager(
         requireAuth()
     }
 
+    fun onAppBackgrounded() {
+        runCatching { prompt.cancelAuthentication() }
+        _uiState.update {
+            if (!it.lockEnabled) it else it.copy(isAuthenticating = false)
+        }
+    }
+
     fun requireAuth() {
         val current = _uiState.value
         if (!current.lockEnabled || current.isAuthenticating || !current.isLocked) return
+
+        if (activity.isFinishing || activity.isDestroyed) {
+            _uiState.update { it.copy(isAuthenticating = false) }
+            return
+        }
+        if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            _uiState.update { it.copy(isAuthenticating = false) }
+            return
+        }
 
         val now = System.currentTimeMillis()
         if (unlockGraceEnabled && now < unlockGraceUntil) {
@@ -213,9 +230,28 @@ class AuthManager(
     }
 
     private fun biometricStatus(authenticators: Int = strongAuthenticators): Int =
-        BiometricManager.from(activity).canAuthenticate(authenticators)
+        runCatching {
+            BiometricManager.from(activity).canAuthenticate(authenticators)
+        }.getOrElse {
+            _uiState.update { state ->
+                state.copy(
+                    isAuthenticating = false,
+                    isBiometricAvailable = false,
+                    message = "生体認証の初期化中に問題が発生しました。PINで解除するか再起動してください。"
+                )
+            }
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE
+        }
 
     private fun authenticateWithBiometric(authenticators: Int, subtitle: String) {
+        if (activity.isFinishing || activity.isDestroyed) {
+            _uiState.update { it.copy(isAuthenticating = false) }
+            return
+        }
+        if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            _uiState.update { it.copy(isAuthenticating = false) }
+            return
+        }
         _uiState.update {
             it.copy(
                 isAuthenticating = true,
@@ -223,14 +259,25 @@ class AuthManager(
                 message = null
             )
         }
-        prompt.authenticate(
-            BiometricPrompt.PromptInfo.Builder()
-                .setTitle("ロック解除")
-                .setSubtitle(subtitle)
-                .setAllowedAuthenticators(authenticators)
-                .setConfirmationRequired(false)
-                .build()
-        )
+        runCatching {
+            prompt.authenticate(
+                BiometricPrompt.PromptInfo.Builder()
+                    .setTitle("ロック解除")
+                    .setSubtitle(subtitle)
+                    .setAllowedAuthenticators(authenticators)
+                    .setConfirmationRequired(false)
+                    .build()
+            )
+        }.onFailure {
+            _uiState.update { state ->
+                state.copy(
+                    isLocked = state.lockEnabled,
+                    isAuthenticating = false,
+                    isBiometricAvailable = false,
+                    message = "生体認証の起動に失敗しました。PINで解除するか、生体認証設定を見直してください。"
+                )
+            }
+        }
     }
 
     fun verifyPin(pin: String) {
