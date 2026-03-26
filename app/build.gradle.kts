@@ -104,7 +104,7 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
     implementation(libs.androidx.documentfile)
-    implementation(libs.mlkit.text.recognition.japanese)
+    implementation(libs.play.services.mlkit.text.recognition.japanese)
     implementation(libs.play.services.auth)
     ksp(libs.hilt.compiler)
     ksp(libs.room.compiler)
